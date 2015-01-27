@@ -2,6 +2,7 @@ package com.jskierbi.app_template.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 import butterknife.ButterKnife;
@@ -35,9 +36,11 @@ public class MainActivity extends BaseActivity implements NavService.Host {
 	@Override public Toolbar toolbar() {
 		return mToolbar;
 	}
-
 	@Override public int fragmentContainerId() {
 		return R.id.content;
+	}
+	@Override public Fragment defaultFragment() {
+		return new MainFragment();
 	}
 
 	@Override public void onBackPressed() {

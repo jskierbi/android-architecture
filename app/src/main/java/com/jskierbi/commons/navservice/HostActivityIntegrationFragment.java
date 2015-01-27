@@ -2,16 +2,16 @@ package com.jskierbi.commons.navservice;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.MenuItem;
 
+/**
+ * Integrates activity lifecycle with NavService (i.e. save/restore state)
+ */
 public class HostActivityIntegrationFragment extends Fragment {
 
-	private static final String TAG = HostActivityIntegrationFragment.class.getSimpleName();
 	private NavService mNavService;
 
 	void setNavService(NavService navService) {
-		Log.d(TAG, "setNavService");
 		mNavService = navService;
 	}
 
@@ -22,7 +22,6 @@ public class HostActivityIntegrationFragment extends Fragment {
 
 	@Override public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		Log.d(TAG, "onActivityCreated");
 		mNavService.onActivityCreated(savedInstanceState);
 	}
 

@@ -22,14 +22,14 @@ public abstract class NavService {
 
 		public Toolbar toolbar();
 		public @IdRes int fragmentContainerId();
+		public Fragment defaultFragment();
 	}
 
 	private static final String TAG = NavService.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 
 	private final FragmentManager mFragmentManager;
-	private final Toolbar mToolbar;
-	private final @IdRes int mFragmentContainerId;
+	private final Host mHost;
 
 	/** Subclass constructor implementation to be injected via dagger - fwd argumetns to this constructor */
 	public NavService(Activity activity, FragmentManager fragmentManager) {
@@ -39,9 +39,7 @@ public abstract class NavService {
 			throw new IllegalStateException("Activity has to implement NavService.Host interface!");
 		}
 
-		Host host = (Host) activity;
-		mToolbar = host.toolbar();
-		mFragmentContainerId = host.fragmentContainerId();
+		mHost = (Host) activity;
 		mFragmentManager = fragmentManager;
 
 		// Initialize HostIntegrationFragment
@@ -56,16 +54,17 @@ public abstract class NavService {
 			HostActivityIntegrationFragment hostActivityIntegrationFragment = (HostActivityIntegrationFragment) integrationFragment;
 			hostActivityIntegrationFragment.setNavService(this);
 		}
-
-		// Initialize default fragment
 	}
 
 	protected abstract Fragment defaultFragment();
 
+	// TODO implement navigateTo
+	// TODO implement setTitle
+	// TODO implement homeAsUp enabed/disabled
+
 	/////////////////////////////////////////////////
 	// Integration via Activity
 	/////////////////////////////////////////////////
-
 	public void onBackPressed() {
 		// TODO handle up navigation
 		Log.d(TAG, "onBackPressed");
@@ -74,14 +73,13 @@ public abstract class NavService {
 	/////////////////////////////////////////////////
 	// Integration via HostActivityIntegrationFragment
 	/////////////////////////////////////////////////
-
 	void onActivityCreated(Bundle savedInstanceState) {
 		Log.d(TAG, "onActivityCreated");
 		// TODO
 
-		if (mFragmentManager.findFragmentById(mFragmentContainerId) == null) {
+		if (mFragmentManager.findFragmentById(mHost.fragmentContainerId()) == null) {
 			mFragmentManager.beginTransaction()
-					.add(mFragmentContainerId, defaultFragment())
+					.add(mHost.fragmentContainerId(), mHost.defaultFragment())
 					.commit();
 		}
 	}
