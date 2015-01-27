@@ -1,12 +1,12 @@
-package com.jskierbi.notificationdemo.ui;
+package com.jskierbi.app_template.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
-import com.jskierbi.notificationdemo.R;
-import com.jskierbi.notificationdemo.base.BaseFragment;
+import com.jskierbi.app_template.R;
+import com.jskierbi.app_template.base.BaseFragment;
 
 /**
  * Created by jakub on 01/27/2015.

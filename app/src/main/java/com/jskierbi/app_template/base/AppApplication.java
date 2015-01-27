@@ -1,7 +1,7 @@
-package com.jskierbi.notificationdemo.base;
+package com.jskierbi.app_template.base;
 
+import com.jskierbi.app_template.modules.AppModule;
 import com.jskierbi.commons.dagger.DaggerApplication;
-import com.jskierbi.notificationdemo.modules.AppModule;
 
 import java.util.Arrays;
 import java.util.List;

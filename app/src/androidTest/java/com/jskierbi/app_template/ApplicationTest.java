@@ -1,4 +1,4 @@
-package com.jskierbi.notificationdemo;
+package com.jskierbi.app_template;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

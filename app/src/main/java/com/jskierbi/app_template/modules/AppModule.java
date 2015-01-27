@@ -1,8 +1,8 @@
-package com.jskierbi.notificationdemo.modules;
+package com.jskierbi.app_template.modules;
 
 import android.content.Context;
+import com.jskierbi.app_template.base.AppApplication;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.notificationdemo.base.AppApplication;
 import dagger.Module;
 import dagger.Provides;
 

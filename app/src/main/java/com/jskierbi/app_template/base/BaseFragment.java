@@ -1,7 +1,7 @@
-package com.jskierbi.notificationdemo.base;
+package com.jskierbi.app_template.base;
 
+import com.jskierbi.app_template.modules.FragmentModule;
 import com.jskierbi.commons.dagger.DaggerFragment;
-import com.jskierbi.notificationdemo.modules.FragmentModule;
 
 import java.util.Arrays;
 import java.util.List;

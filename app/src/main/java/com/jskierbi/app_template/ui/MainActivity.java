@@ -1,4 +1,4 @@
-package com.jskierbi.notificationdemo.ui;
+package com.jskierbi.app_template.ui;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,9 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.widget.FrameLayout;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
+import com.jskierbi.app_template.R;
+import com.jskierbi.app_template.base.BaseActivity;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.notificationdemo.R;
-import com.jskierbi.notificationdemo.base.BaseActivity;
 
 import javax.inject.Inject;
 

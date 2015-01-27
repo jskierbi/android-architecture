@@ -1,8 +1,8 @@
-package com.jskierbi.notificationdemo.modules;
+package com.jskierbi.app_template.modules;
 
 import android.support.v4.app.FragmentManager;
-import com.jskierbi.notificationdemo.base.BaseActivity;
-import com.jskierbi.notificationdemo.ui.MainActivity;
+import com.jskierbi.app_template.base.BaseActivity;
+import com.jskierbi.app_template.ui.MainActivity;
 import dagger.Module;
 import dagger.Provides;
 

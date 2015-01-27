@@ -1,6 +1,6 @@
-package com.jskierbi.notificationdemo.modules;
+package com.jskierbi.app_template.modules;
 
-import com.jskierbi.notificationdemo.base.BaseFragment;
+import com.jskierbi.app_template.base.BaseFragment;
 import dagger.Module;
 
 /**
