@@ -16,7 +16,7 @@ import android.view.MenuItem;
  * 1. implement {#link Host} interface
  * 2. call {#link NavService#onBackPressed} from {#link Activity#onBackPressed}
  */
-public abstract class NavService {
+public abstract class BaseNavService {
 
 	public interface Host {
 
@@ -25,14 +25,14 @@ public abstract class NavService {
 		public Fragment defaultFragment();
 	}
 
-	private static final String TAG = NavService.class.getSimpleName();
+	private static final String TAG = BaseNavService.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 
 	private final FragmentManager mFragmentManager;
 	private final Host mHost;
 
 	/** Subclass constructor implementation to be injected via dagger - fwd argumetns to this constructor */
-	public NavService(Activity activity, FragmentManager fragmentManager) {
+	public BaseNavService(Activity activity, FragmentManager fragmentManager) {
 
 		// Runtime check
 		if (!(activity instanceof Host)) {

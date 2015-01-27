@@ -9,9 +9,9 @@ import android.view.MenuItem;
  */
 public class HostActivityIntegrationFragment extends Fragment {
 
-	private NavService mNavService;
+	private BaseNavService mNavService;
 
-	void setNavService(NavService navService) {
+	void setNavService(BaseNavService navService) {
 		mNavService = navService;
 	}
 

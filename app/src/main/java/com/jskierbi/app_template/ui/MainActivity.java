@@ -9,22 +9,22 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseActivity;
-import com.jskierbi.app_template.services.AppNavService;
+import com.jskierbi.app_template.services.NavService;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.commons.navservice.NavService;
+import com.jskierbi.commons.navservice.BaseNavService;
 
 import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/27/2015.
  */
-public class MainActivity extends BaseActivity implements NavService.Host {
+public class MainActivity extends BaseActivity implements BaseNavService.Host {
 
 	@InjectView(R.id.content) FrameLayout mContent;
 	@InjectView(R.id.toolbar) Toolbar mToolbar;
 
 	@Inject @ForApplication Context mContext;
-	@Inject AppNavService mNavService;
+	@Inject NavService mNavService;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

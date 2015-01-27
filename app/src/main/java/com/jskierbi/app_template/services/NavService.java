@@ -4,17 +4,17 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.ui.MainFragment;
-import com.jskierbi.commons.navservice.NavService;
+import com.jskierbi.commons.navservice.BaseNavService;
 
 import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/27/2015.
  */
-public class AppNavService extends NavService {
+public class NavService extends BaseNavService {
 
 	@Inject
-	public AppNavService(Activity activity, FragmentManager fragmentManager) {
+	public NavService(Activity activity, FragmentManager fragmentManager) {
 		super(activity, fragmentManager);
 	}
 
