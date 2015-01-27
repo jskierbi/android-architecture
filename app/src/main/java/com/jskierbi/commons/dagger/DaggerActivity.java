@@ -1,7 +1,7 @@
 package com.jskierbi.commons.dagger;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import dagger.ObjectGraph;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Base class for creating injectable Activities
  */
-public abstract class DaggerActivity extends FragmentActivity {
+public abstract class DaggerActivity extends ActionBarActivity {
 
 	private ObjectGraph mObjectGraph;
 
