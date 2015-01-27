@@ -1,5 +1,6 @@
 package com.jskierbi.app_template.modules;
 
+import android.app.Activity;
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.base.BaseActivity;
 import com.jskierbi.app_template.ui.MainActivity;
@@ -28,5 +29,9 @@ public class ActivityModule {
 
 	@Provides @Singleton FragmentManager provideFragmentManager() {
 		return mActivity.getSupportFragmentManager();
+	}
+
+	@Provides @Singleton Activity provideActivity() {
+		return mActivity;
 	}
 }
