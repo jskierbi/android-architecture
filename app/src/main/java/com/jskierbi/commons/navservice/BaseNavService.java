@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ public abstract class BaseNavService {
 
 	private final FragmentManager mFragmentManager;
 	private final Host mHost;
+	private final Activity mActivity;
 
 	/** Subclass constructor implementation to be injected via dagger - fwd argumetns to this constructor */
 	public BaseNavService(Activity activity, FragmentManager fragmentManager) {
@@ -39,6 +41,7 @@ public abstract class BaseNavService {
 			throw new IllegalStateException("Activity has to implement NavService.Host interface!");
 		}
 
+		mActivity = activity;
 		mHost = (Host) activity;
 		mFragmentManager = fragmentManager;
 
@@ -54,6 +57,34 @@ public abstract class BaseNavService {
 			HostActivityIntegrationFragment hostActivityIntegrationFragment = (HostActivityIntegrationFragment) integrationFragment;
 			hostActivityIntegrationFragment.setNavService(this);
 		}
+	}
+
+	// 2.3 does not support fragment transition animations!!!
+
+	public void navigateTo(Fragment fragment) {
+		navigateTo(fragment, true);
+	}
+
+	public void navigateTo(Fragment fragment, boolean flgAddToBackstack) {
+
+		FragmentTransaction transaction = mFragmentManager.beginTransaction();
+		transaction.replace(mHost.fragmentContainerId(), fragment);
+		if (flgAddToBackstack) {
+			transaction.addToBackStack(null);
+		}
+		transaction.commit();
+	}
+
+	public void navigateBack() {
+		if (mFragmentManager.getBackStackEntryCount() > 0) {
+			mFragmentManager.popBackStack();
+		} else {
+			mActivity.finish();
+		}
+	}
+
+	public void clearBackstack() {
+
 	}
 
 	protected abstract Fragment defaultFragment();

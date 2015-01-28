@@ -5,17 +5,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseFragment;
+import com.jskierbi.app_template.services.NavService;
+
+import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/27/2015.
  */
 public class MainFragment extends BaseFragment {
 
+	@Inject NavService mNavService;
+
 	@Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_main, container, false);
 		ButterKnife.inject(this, v);
 		return v;
+	}
+
+	@OnClick(R.id.btn_nav_details) void navDetailsClick() {
+		mNavService.navigateTo(new DetailFragment());
 	}
 }

@@ -1,6 +1,8 @@
 package com.jskierbi.app_template.modules;
 
 import com.jskierbi.app_template.base.BaseFragment;
+import com.jskierbi.app_template.ui.Detail2Fragment;
+import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.MainFragment;
 import dagger.Module;
 
@@ -9,7 +11,9 @@ import dagger.Module;
  */
 @Module(
 		injects = {
-				MainFragment.class
+				MainFragment.class,
+				DetailFragment.class,
+				Detail2Fragment.class
 		},
 		addsTo = ActivityModule.class
 )

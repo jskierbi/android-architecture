@@ -9,4 +9,10 @@
         android:layout_height="wrap_content"
         android:text="Hello world!" />
 
+    <Button
+        android:id="@+id/btn_nav_details"
+        android:text="To details"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
 </LinearLayout>
