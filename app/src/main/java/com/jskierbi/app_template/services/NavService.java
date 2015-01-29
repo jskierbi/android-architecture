@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.ui.MainFragment;
+import com.jskierbi.commons.navservice.BaseNavFragment;
 import com.jskierbi.commons.navservice.BaseNavService;
 
 import javax.inject.Inject;
@@ -18,7 +19,7 @@ public class NavService extends BaseNavService {
 		super(activity, fragmentManager);
 	}
 
-	@Override protected Fragment defaultFragment() {
+	@Override protected BaseNavFragment defaultFragment() {
 		return new MainFragment();
 	}
 }

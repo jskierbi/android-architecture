@@ -1,6 +1,7 @@
 package com.jskierbi.commons.navservice;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import com.jskierbi.app_template.R;
 
 /**
  * Base NavService class.
@@ -61,13 +63,22 @@ public abstract class BaseNavService {
 
 	// 2.3 does not support fragment transition animations!!!
 
-	public void navigateTo(Fragment fragment) {
+	public void navigateTo(BaseNavFragment fragment) {
 		navigateTo(fragment, true);
 	}
 
-	public void navigateTo(Fragment fragment, boolean flgAddToBackstack) {
+	public void navigateTo(BaseNavFragment fragment, boolean flgAddToBackstack) {
 
 		FragmentTransaction transaction = mFragmentManager.beginTransaction();
+		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			// Animations diabled for pre ICS
+			transaction.setCustomAnimations(
+					fragment.getEnterAnim(),
+					fragment.getExitAnim(),
+					fragment.getPopEnterAnim(),
+					fragment.getPopExitAnim());
+		}
 		transaction.replace(mHost.fragmentContainerId(), fragment);
 		if (flgAddToBackstack) {
 			transaction.addToBackStack(null);
@@ -87,7 +98,7 @@ public abstract class BaseNavService {
 
 	}
 
-	protected abstract Fragment defaultFragment();
+	protected abstract BaseNavFragment defaultFragment();
 
 	// TODO implement navigateTo
 	// TODO implement setTitle
@@ -99,6 +110,7 @@ public abstract class BaseNavService {
 	public void onBackPressed() {
 		// TODO handle up navigation
 		Log.d(TAG, "onBackPressed");
+		navigateBack();
 	}
 
 	/////////////////////////////////////////////////
