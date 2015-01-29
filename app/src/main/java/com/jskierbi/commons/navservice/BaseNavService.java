@@ -10,14 +10,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import com.jskierbi.app_template.R;
 
 /**
  * Base NavService class.
  *
  * Integration with Activity:
- * 1. implement {#link Host} interface
- * 2. call {#link NavService#onBackPressed} from {#link Activity#onBackPressed}
+ * 1. implement {@link Host} interface
+ * 2. call {@link BaseNavService#onBackPressed()} from {@link Activity#onBackPressed}
  */
 public abstract class BaseNavService {
 
@@ -61,34 +60,71 @@ public abstract class BaseNavService {
 		}
 	}
 
-	// 2.3 does not support fragment transition animations!!!
-
 	public void navigateTo(BaseNavFragment fragment) {
 		navigateTo(fragment, true);
 	}
 
+	/**
+	 * Base navigation method. Adds proper support for transition animations.
+	 * Animations are defined in BaseNavFragment using {#link BaseNavFragment#setCustomAnimations}
+	 *
+	 * Addressed problems:
+	 * * When changing orientations, custom animations from transactions are lost. This is fixed in {@link BaseNavFragment}
+	 * * When navigating back, popExit for current fragment and popEnter for previous fragment are inconsistent.
+	 * This method sets popEnter for previous fragment using popEnter from this fragment - so popEnter in each
+	 * fragment is de facto used for previous fragment. This enables to define fragment transitions on sigle fragment object.
+	 *
+	 * @param fragment to navigate to
+	 * @param flgAddToBackstack whether to add transaction to backstack or not.
+	 */
 	public void navigateTo(BaseNavFragment fragment, boolean flgAddToBackstack) {
 
-		FragmentTransaction transaction = mFragmentManager.beginTransaction();
-		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-			// Animations diabled for pre ICS
-			transaction.setCustomAnimations(
-					fragment.getEnterAnim(),
-					fragment.getExitAnim(),
-					fragment.getPopEnterAnim(),
-					fragment.getPopExitAnim());
+		try {
+			FragmentTransaction transaction = mFragmentManager.beginTransaction();
+			Fragment currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId());
+			if (currentFragment instanceof BaseNavFragment) {
+				// For current fragment, set animation that will be played when navigating back
+				// This is to enable defining animations on single fragment that will be respected by previous
+				// fragment in backstack
+				((BaseNavFragment) currentFragment).setPopEnterAnim(fragment.getPopEnterAnim());
+			}
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+				// Animations diabled for pre ICS
+				transaction.setCustomAnimations(
+						fragment.getEnterAnim(),
+						fragment.getExitAnim(),
+						fragment.getPopEnterAnim(),
+						fragment.getPopExitAnim());
+			}
+			transaction.replace(mHost.fragmentContainerId(), fragment);
+			if (flgAddToBackstack) {
+				transaction.addToBackStack(null);
+			}
+			transaction.commit();
+		} catch (Exception ex) {
+			Log.e(TAG, "Exception while adding fragment to backstack!!!", ex);
 		}
-		transaction.replace(mHost.fragmentContainerId(), fragment);
-		if (flgAddToBackstack) {
-			transaction.addToBackStack(null);
-		}
-		transaction.commit();
 	}
 
+	/**
+	 * Navigates back
+	 */
 	public void navigateBack() {
 		if (mFragmentManager.getBackStackEntryCount() > 0) {
-			mFragmentManager.popBackStack();
+			try {
+				Fragment currentFragment;
+				if ((currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId())) != null) {
+					// Current fragment can be added/replaced without adding to backstack. If this is the case,
+					// after popping backstack current fragment will still be visible - so we need to remove it manually!
+					mFragmentManager.beginTransaction()
+							.remove(currentFragment)
+							.commit();
+				}
+				mFragmentManager.popBackStack();
+			} catch (Exception ex) {
+				Log.e(TAG, "Exception trying to pop fragment!", ex);
+			}
 		} else {
 			mActivity.finish();
 		}

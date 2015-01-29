@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseFragment;
 import com.jskierbi.app_template.services.NavService;
 
@@ -28,7 +29,9 @@ public class DetailFragment extends BaseFragment {
 		button.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
 				try {
-					mNavService.navigateTo(new Detail2Fragment());
+					BaseFragment fragment = new Detail2Fragment();
+					fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
+					mNavService.navigateTo(fragment, false);
 				} catch (Exception ex) {
 					Log.e(TAG, "Nav button exception", ex);
 				}

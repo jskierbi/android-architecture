@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import com.jskierbi.commons.dagger.DaggerFragment;
@@ -15,16 +16,19 @@ import com.jskierbi.commons.dagger.DaggerFragment;
  */
 public abstract class BaseNavFragment extends DaggerFragment {
 
+	private static final String TAG = BaseNavFragment.class.getSimpleName();
+
 	private static final String STATE_ENTER_ANIM = "STATE_ENTER_ANIM";
 	private static final String STATE_EXIT_ANIM = "STATE_EXIT_ANIM";
 	private static final String STATE_POP_ENTER_ANIM = "STATE_POP_ENTER_ANIM";
 	private static final String STATE_POP_EXIT_ANIM = "STATE_POP_EXIT_ANIM";
+	private static final String STATE_CHANGING_CONFIGURATIONS = "STATE_CHANGING_CONFIGURATIONS";
 
 	private @AnimRes int mEnter = 0;
 	private @AnimRes int mExit = 0;
 	private @AnimRes int mPopEnter = 0;
 	private @AnimRes int mPopExit = 0;
-
+	private boolean mIsChangingConfigurations = false;
 
 	public void setCustomAnimations(@AnimRes int enterAnim,
 	                                @AnimRes int exitAnim,
@@ -34,6 +38,19 @@ public abstract class BaseNavFragment extends DaggerFragment {
 		mExit = exitAnim;
 		mPopEnter = popEnterAnim;
 		mPopExit = popExitAnim;
+	}
+
+	public void setEnterAnim(@AnimRes int animRes) {
+		mEnter = animRes;
+	}
+	public void setExitAnim(@AnimRes int animRes) {
+		mExit = animRes;
+	}
+	public void setPopEnterAnim(@AnimRes int animRes) {
+		mPopEnter = animRes;
+	}
+	public void setPopExitAnim(@AnimRes int animRes) {
+		mPopExit = animRes;
 	}
 
 	public @AnimRes int getEnterAnim() {
@@ -56,6 +73,7 @@ public abstract class BaseNavFragment extends DaggerFragment {
 			mExit = savedInstanceState.getInt(STATE_EXIT_ANIM);
 			mPopEnter = savedInstanceState.getInt(STATE_POP_ENTER_ANIM);
 			mPopExit = savedInstanceState.getInt(STATE_POP_EXIT_ANIM);
+			mIsChangingConfigurations = savedInstanceState.getBoolean(STATE_CHANGING_CONFIGURATIONS);
 		}
 	}
 
@@ -65,6 +83,19 @@ public abstract class BaseNavFragment extends DaggerFragment {
 		outState.putInt(STATE_EXIT_ANIM, mExit);
 		outState.putInt(STATE_POP_ENTER_ANIM, mPopEnter);
 		outState.putInt(STATE_POP_EXIT_ANIM, mPopExit);
+		outState.putBoolean(STATE_CHANGING_CONFIGURATIONS, mIsChangingConfigurations);
+	}
+
+	@Override public void onResume() {
+		super.onResume();
+		mIsChangingConfigurations = false;
+	}
+
+	@Override public void onPause() {
+		super.onPause();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+			mIsChangingConfigurations = getActivity().isChangingConfigurations();
+		}
 	}
 
 	@SuppressLint("NewApi")
@@ -77,11 +108,14 @@ public abstract class BaseNavFragment extends DaggerFragment {
 
 		try {
 			int anim;
-			if (getActivity().isChangingConfigurations()) {
+			if (mIsChangingConfigurations) {
+				Log.d(TAG, "onCreateAnimation(): isChangingConfigurations");
 				anim = 0;
 			} else if (nextAnim != 0) {
 				anim = nextAnim;
+				Log.d(TAG, "onCreateAnimation(): next anim");
 			} else {
+				Log.d(TAG, "onCreateAnimation(): pop anim");
 				anim = enter ? mPopEnter : mPopExit;
 			}
 			if (anim != 0) {

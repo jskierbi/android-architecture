@@ -26,6 +26,8 @@ public class MainFragment extends BaseFragment {
 	}
 
 	@OnClick(R.id.btn_nav_details) void navDetailsClick() {
-		mNavService.navigateTo(new DetailFragment());
+		BaseFragment fragment = new DetailFragment();
+		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
+		mNavService.navigateTo(fragment);
 	}
 }
