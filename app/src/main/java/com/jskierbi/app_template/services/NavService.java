@@ -1,8 +1,8 @@
 package com.jskierbi.app_template.services;
 
-import android.app.Activity;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.annotation.StringRes;
+import com.jskierbi.app_template.R;
+import com.jskierbi.app_template.base.BaseActivity;
 import com.jskierbi.app_template.ui.MainFragment;
 import com.jskierbi.commons.navservice.BaseNavFragment;
 import com.jskierbi.commons.navservice.BaseNavService;
@@ -15,11 +15,15 @@ import javax.inject.Inject;
 public class NavService extends BaseNavService {
 
 	@Inject
-	public NavService(Activity activity, FragmentManager fragmentManager) {
-		super(activity, fragmentManager);
+	public NavService(BaseActivity activity) {
+		super(activity);
 	}
 
 	@Override protected BaseNavFragment defaultFragment() {
 		return new MainFragment();
+	}
+
+	@Override protected @StringRes int doubleBackToExit() {
+		return R.string.double_back_to_exit;
 	}
 }

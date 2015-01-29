@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 /**
  * Base NavService class.
@@ -33,18 +36,26 @@ public abstract class BaseNavService {
 	private final FragmentManager mFragmentManager;
 	private final Host mHost;
 	private final Activity mActivity;
+	private final DoubleBackToExit mDoubleBackToExit = new DoubleBackToExit();
 
-	/** Subclass constructor implementation to be injected via dagger - fwd argumetns to this constructor */
-	public BaseNavService(Activity activity, FragmentManager fragmentManager) {
+	/**
+	 * Creates navigation service that is hosted by activity.
+	 * There is headless fragment created and added via FragmentManger inside this constructor
+	 * to manage toolbar state (uses Fragments' lifecycle callbacks to save and restore state)
+	 *
+	 * @param activity to host this navigation service, have to extend
+	 *                 {@link FragmentActivity} and implement {@link Host} interface.
+	 */
+	public BaseNavService(FragmentActivity activity) {
 
 		// Runtime check
 		if (!(activity instanceof Host)) {
-			throw new IllegalStateException("Activity has to implement NavService.Host interface!");
+			throw new IllegalArgumentException("Activity has to implement NavService.Host interface!");
 		}
 
 		mActivity = activity;
 		mHost = (Host) activity;
-		mFragmentManager = fragmentManager;
+		mFragmentManager = activity.getSupportFragmentManager();
 
 		// Initialize HostIntegrationFragment
 		Fragment integrationFragment = mFragmentManager.findFragmentByTag(TAG_HOST_INTEGRATION_FRAGMENT);
@@ -132,8 +143,15 @@ public abstract class BaseNavService {
 				Log.e(TAG, "Exception trying to pop fragment!", ex);
 			}
 		} else {
-			// TODO handle double click to exit here!
-			mActivity.finish();
+			if (doubleBackToExit() != 0 && mActivity.isTaskRoot()) {
+				if (mDoubleBackToExit.isExitOnBack()) {
+					mActivity.finish();
+				} else {
+					Toast.makeText(mActivity, doubleBackToExit(), Toast.LENGTH_SHORT).show();
+				}
+			} else {
+				mActivity.finish();
+			}
 		}
 	}
 
@@ -141,11 +159,18 @@ public abstract class BaseNavService {
 		// TODO to be implemented
 	}
 
+	/** Default fragment to be put to container */
 	protected abstract BaseNavFragment defaultFragment();
 
-	// TODO implement navigateTo
-	// TODO implement setTitle
+	/**
+	 * 0 to disable double back to exit, string res to enable.
+	 * String res will be used to show toast.
+	 * @return string res to be displayed on double back to exit, or 0 to disable this feature.
+	 */
+	protected abstract @StringRes int doubleBackToExit();
+
 	// TODO implement homeAsUp enabed/disabled
+	// TODO implement NavDrawer
 
 	/////////////////////////////////////////////////
 	// Integration via Activity

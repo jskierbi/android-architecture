@@ -101,22 +101,22 @@ public abstract class BaseNavFragment extends DaggerFragment {
 		// @see http://stackoverflow.com/questions/8837408/fragment-lost-transition-animation-after-configuration-change
 		// @see https://code.google.com/p/android/issues/detail?id=25994&can=4&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
 
-		// Do not support animations PRE-3.0, isChangingConfigurations() is not available!
 		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+			// Do not support animations PRE-3.0, isChangingConfigurations() is not available!
 			return null;
 		}
 
 		try {
 			int anim;
 			if (mIsChangingConfigurations) {
-				// Do not play animation if changing configurations
+				// Recreating after change configuration, we don't want to play animation
 				anim = 0;
 			} else if (nextAnim != 0) {
-				// If animation from transaction was not lost -> load it
+				// Animation available (not lost) -> play it!
 				anim = nextAnim;
 			} else {
-				// This is case where animation from transaction could be lost - load
-				// animation saved in fragment. If enter -> we're popEntering, if exit -> we're popExiting
+				// Animation probably lost - load anim saved in fragment state.
+				// enter = we're about to play popEnterAnim, in other case popExitAnimation
 				anim = enter ? mPopEnter : mPopExit;
 			}
 			if (anim != 0) {

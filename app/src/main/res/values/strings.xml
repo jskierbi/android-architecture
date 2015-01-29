@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Android Architecutre</string>
+    <string name="double_back_to_exit">Press back to exit</string>
 </resources>
