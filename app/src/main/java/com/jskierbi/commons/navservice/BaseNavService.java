@@ -66,7 +66,7 @@ public abstract class BaseNavService {
 
 	/**
 	 * Base navigation method. Adds proper support for transition animations.
-	 * Animations are defined in BaseNavFragment using {#link BaseNavFragment#setCustomAnimations}
+	 * Animations are defined in BaseNavFragment using {@link BaseNavFragment#setCustomAnimations}
 	 *
 	 * Addressed problems:
 	 * * When changing orientations, custom animations from transactions are lost. This is fixed in {@link BaseNavFragment}
@@ -74,30 +74,38 @@ public abstract class BaseNavService {
 	 * This method sets popEnter for previous fragment using popEnter from this fragment - so popEnter in each
 	 * fragment is de facto used for previous fragment. This enables to define fragment transitions on sigle fragment object.
 	 *
-	 * @param fragment to navigate to
+	 * @param nextFragment to navigate to
 	 * @param flgAddToBackstack whether to add transaction to backstack or not.
 	 */
-	public void navigateTo(BaseNavFragment fragment, boolean flgAddToBackstack) {
+	public void navigateTo(BaseNavFragment nextFragment, boolean flgAddToBackstack) {
 
 		try {
-			FragmentTransaction transaction = mFragmentManager.beginTransaction();
 			Fragment currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId());
 			if (currentFragment instanceof BaseNavFragment) {
 				// For current fragment, set animation that will be played when navigating back
 				// This is to enable defining animations on single fragment that will be respected by previous
 				// fragment in backstack
-				((BaseNavFragment) currentFragment).setPopEnterAnim(fragment.getPopEnterAnim());
+				((BaseNavFragment) currentFragment).setPopEnterAnim(nextFragment.getPopEnterAnim());
 			}
 
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
-				// Animations diabled for pre ICS
+			// Use case: exit via home, return to application. When popEnter animation set by fragment is used,
+			// each time user returns to app, animation will be played - this is wrong, no animation should be played.
+			// PopEnter animation will be set for nextFragment in next navigateTo call (nextFragment will become
+			// currentFragment in next navigateTo call)
+			nextFragment.setPopEnterAnim(0);
+
+			FragmentTransaction transaction = mFragmentManager.beginTransaction();
+			// Disable animation Pre 4.0.
+			// Animation fixes in BaseNavFragment uses {@link Activity#isChangingConfigurations}, which is unavailable
+			// for pre 3.0
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 				transaction.setCustomAnimations(
-						fragment.getEnterAnim(),
-						fragment.getExitAnim(),
-						fragment.getPopEnterAnim(),
-						fragment.getPopExitAnim());
+						nextFragment.getEnterAnim(),
+						nextFragment.getExitAnim(),
+						nextFragment.getPopEnterAnim(),
+						nextFragment.getPopExitAnim());
 			}
-			transaction.replace(mHost.fragmentContainerId(), fragment);
+			transaction.replace(mHost.fragmentContainerId(), nextFragment);
 			if (flgAddToBackstack) {
 				transaction.addToBackStack(null);
 			}
@@ -107,16 +115,14 @@ public abstract class BaseNavService {
 		}
 	}
 
-	/**
-	 * Navigates back
-	 */
 	public void navigateBack() {
 		if (mFragmentManager.getBackStackEntryCount() > 0) {
 			try {
 				Fragment currentFragment;
 				if ((currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId())) != null) {
 					// Current fragment can be added/replaced without adding to backstack. If this is the case,
-					// after popping backstack current fragment will still be visible - so we need to remove it manually!
+					// after popping backstack current fragment will still be visible - so we need to remove it manually
+					// before popping!
 					mFragmentManager.beginTransaction()
 							.remove(currentFragment)
 							.commit();
@@ -126,12 +132,13 @@ public abstract class BaseNavService {
 				Log.e(TAG, "Exception trying to pop fragment!", ex);
 			}
 		} else {
+			// TODO handle double click to exit here!
 			mActivity.finish();
 		}
 	}
 
 	public void clearBackstack() {
-
+		// TODO to be implemented
 	}
 
 	protected abstract BaseNavFragment defaultFragment();
@@ -144,8 +151,6 @@ public abstract class BaseNavService {
 	// Integration via Activity
 	/////////////////////////////////////////////////
 	public void onBackPressed() {
-		// TODO handle up navigation
-		Log.d(TAG, "onBackPressed");
 		navigateBack();
 	}
 

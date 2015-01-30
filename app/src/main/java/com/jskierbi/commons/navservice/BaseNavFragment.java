@@ -4,19 +4,15 @@ import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.AnimRes;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import com.jskierbi.commons.dagger.DaggerFragment;
 
 /**
  * Contains code to fix loosing fragment transaction animation after screen rotation
- * @see http://stackoverflow.com/questions/8837408/fragment-lost-transition-animation-after-configuration-change
- * @see https://code.google.com/p/android/issues/detail?id=25994&can=4&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
+ * To be used with {@link com.jskierbi.commons.navservice.BaseNavService}
  */
 public abstract class BaseNavFragment extends DaggerFragment {
-
-	private static final String TAG = BaseNavFragment.class.getSimpleName();
 
 	private static final String STATE_ENTER_ANIM = "STATE_ENTER_ANIM";
 	private static final String STATE_EXIT_ANIM = "STATE_EXIT_ANIM";
@@ -93,7 +89,7 @@ public abstract class BaseNavFragment extends DaggerFragment {
 
 	@Override public void onPause() {
 		super.onPause();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			mIsChangingConfigurations = getActivity().isChangingConfigurations();
 		}
 	}
@@ -101,21 +97,26 @@ public abstract class BaseNavFragment extends DaggerFragment {
 	@SuppressLint("NewApi")
 	@Override public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
 
-		// Do not support animations PRE-4.0
-		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+		// This implementation fixes loosing transition animations on orientation changes:
+		// @see http://stackoverflow.com/questions/8837408/fragment-lost-transition-animation-after-configuration-change
+		// @see https://code.google.com/p/android/issues/detail?id=25994&can=4&colspec=ID%20Type%20Status%20Owner%20Summary%20Stars
+
+		// Do not support animations PRE-3.0, isChangingConfigurations() is not available!
+		if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
 			return null;
 		}
 
 		try {
 			int anim;
 			if (mIsChangingConfigurations) {
-				Log.d(TAG, "onCreateAnimation(): isChangingConfigurations");
+				// Do not play animation if changing configurations
 				anim = 0;
 			} else if (nextAnim != 0) {
+				// If animation from transaction was not lost -> load it
 				anim = nextAnim;
-				Log.d(TAG, "onCreateAnimation(): next anim");
 			} else {
-				Log.d(TAG, "onCreateAnimation(): pop anim");
+				// This is case where animation from transaction could be lost - load
+				// animation saved in fragment. If enter -> we're popEntering, if exit -> we're popExiting
 				anim = enter ? mPopEnter : mPopExit;
 			}
 			if (anim != 0) {
