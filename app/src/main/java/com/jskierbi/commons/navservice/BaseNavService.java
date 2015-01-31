@@ -156,7 +156,19 @@ public abstract class BaseNavService {
 	}
 
 	public void clearBackstack() {
-		// TODO to be implemented
+		final int backstackEntryCount = mFragmentManager.getBackStackEntryCount();
+		for (int i = mFragmentManager.getBackStackEntryCount(); i > 0; --i) {
+			// Current fragment could has been added outside transaction - remove it!
+			final Fragment currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId());
+			if (backstackEntryCount > 0 && currentFragment != null) {
+				mFragmentManager.beginTransaction()
+						.remove(currentFragment)
+						.commit();
+			}
+			// Execute transaction immediate, so in next loop we can get current fragment and remove it!
+			mFragmentManager.popBackStackImmediate();
+		}
+
 	}
 
 	/** Default fragment to be put to container */
