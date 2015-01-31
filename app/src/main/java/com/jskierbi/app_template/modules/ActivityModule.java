@@ -2,7 +2,6 @@ package com.jskierbi.app_template.modules;
 
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.base.BaseActivity;
-import com.jskierbi.app_template.ui.Detail2Fragment;
 import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.MainActivity;
 import com.jskierbi.app_template.ui.MainFragment;
@@ -19,8 +18,7 @@ import javax.inject.Singleton;
 				MainActivity.class,
 
 				MainFragment.class,
-				DetailFragment.class,
-				Detail2Fragment.class
+				DetailFragment.class
 		},
 		addsTo = AppModule.class,
 		library = true // can be injected to fragments!
