@@ -176,7 +176,7 @@ public abstract class BaseNavService {
 
 	/**
 	 * 0 to disable double back to exit, string res to enable.
-	 * String res will be used to show toast.
+	 * String res will be used by toast shown on first back click.
 	 * @return string res to be displayed on double back to exit, or 0 to disable this feature.
 	 */
 	protected abstract @StringRes int doubleBackToExit();
