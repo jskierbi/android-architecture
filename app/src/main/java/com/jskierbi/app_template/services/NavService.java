@@ -2,7 +2,7 @@ package com.jskierbi.app_template.services;
 
 import android.support.annotation.StringRes;
 import com.jskierbi.app_template.R;
-import com.jskierbi.app_template.base.BaseActivity;
+import com.jskierbi.app_template.base.BaseAppActivity;
 import com.jskierbi.app_template.ui.MainFragment;
 import com.jskierbi.commons.navservice.BaseNavFragment;
 import com.jskierbi.commons.navservice.BaseNavService;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 public class NavService extends BaseNavService {
 
 	@Inject
-	public NavService(BaseActivity activity) {
+	public NavService(BaseAppActivity activity) {
 		super(activity);
 	}
 

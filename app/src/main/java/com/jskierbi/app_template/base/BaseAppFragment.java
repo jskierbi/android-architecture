@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * Created by jakub on 01/27/2015.
  */
-public class BaseFragment extends BaseNavFragment {
+public class BaseAppFragment extends BaseNavFragment {
 
 	@Override protected List<Object> listModules() {
-		return Arrays.<Object>asList();
+		return Arrays.asList();
 	}
 }

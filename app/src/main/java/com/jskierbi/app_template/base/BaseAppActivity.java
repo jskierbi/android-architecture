@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by jakub on 01/27/2015.
  */
-public class BaseActivity extends DaggerActivity {
+public class BaseAppActivity extends DaggerActivity {
 
 	@Override protected List<Object> listModules() {
 		return Arrays.<Object>asList(new ActivityModule(this));

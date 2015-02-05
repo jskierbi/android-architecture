@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.jskierbi.app_template.R;
-import com.jskierbi.app_template.base.BaseFragment;
+import com.jskierbi.app_template.base.BaseAppFragment;
 import com.jskierbi.app_template.services.NavService;
 
 import javax.inject.Inject;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 /**
  * Created by jakub on 01/27/2015.
  */
-public class MainFragment extends BaseFragment {
+public class MainFragment extends BaseAppFragment {
 
 	@Inject NavService mNavService;
 
@@ -26,7 +26,7 @@ public class MainFragment extends BaseFragment {
 	}
 
 	@OnClick(R.id.btn_nav_details) void navDetailsClick() {
-		BaseFragment fragment = new DetailFragment();
+		BaseAppFragment fragment = new DetailFragment();
 		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
 		mNavService.navigateTo(fragment);
 	}
