@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Android Architecutre</string>
     <string name="double_back_to_exit">Press back to exit</string>
+    <string name="open_drawer">Open navigation</string>
+    <string name="close_drawer">Close navigation</string>
 </resources>

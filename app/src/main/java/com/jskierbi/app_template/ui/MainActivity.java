@@ -11,14 +11,14 @@ import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseAppActivity;
 import com.jskierbi.app_template.services.NavService;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.commons.navservice.BaseNavService;
+import com.jskierbi.commons.navservice.NavServiceHost;
 
 import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/27/2015.
  */
-public class MainActivity extends BaseAppActivity implements BaseNavService.Host {
+public class MainActivity extends BaseAppActivity implements NavServiceHost {
 
 	@InjectView(R.id.content) FrameLayout mContent;
 	@InjectView(R.id.toolbar) Toolbar mToolbar;

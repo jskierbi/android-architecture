@@ -3,40 +3,38 @@ package com.jskierbi.commons.navservice;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+import org.parceler.Parcel;
 
 /**
  * Base NavService class.
  *
  * Integration with Activity:
- * 1. implement {@link Host} interface
+ * 1. implement {@link NavServiceHost} interface
  * 2. call {@link BaseNavService#onBackPressed()} from {@link Activity#onBackPressed}
  */
 public abstract class BaseNavService {
 
-	public interface Host {
-
-		public Toolbar toolbar();
-		public @IdRes int fragmentContainerId();
-		public Fragment defaultFragment();
-	}
-
 	private static final String TAG = BaseNavService.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
+	private static final String STATE_ACTIONBAR_DISPLAY_OPTIONS = TAG + "_STATE_ACTIONBAR_DISPLAY_OPTIONS";
 
 	private final FragmentManager mFragmentManager;
-	private final Host mHost;
+	private final NavServiceHost mHost;
 	private final ActionBarActivity mActivity;
 	private final DoubleBackToExit mDoubleBackToExit = new DoubleBackToExit();
+
+	private final State mState = new State();
+	@Parcel public static class State {
+
+	}
 
 	/**
 	 * Creates navigation service that is hosted by activity.
@@ -44,17 +42,17 @@ public abstract class BaseNavService {
 	 * to manage toolbar state (uses Fragments' lifecycle callbacks to save and restore state)
 	 *
 	 * @param activity to host this navigation service, have to extend
-	 *                 {@link ActionBarActivity} and implement {@link Host} interface.
+	 *                 {@link ActionBarActivity} and implement {@link NavServiceHost} interface.
 	 */
 	public BaseNavService(ActionBarActivity activity) {
 
 		// Runtime check
-		if (!(activity instanceof Host)) {
+		if (!(activity instanceof NavServiceHost)) {
 			throw new IllegalArgumentException("Activity has to implement NavService.Host interface!");
 		}
 
 		mActivity = activity;
-		mHost = (Host) activity;
+		mHost = (NavServiceHost) activity;
 		mFragmentManager = activity.getSupportFragmentManager();
 
 		// Initialize HostIntegrationFragment
@@ -152,6 +150,7 @@ public abstract class BaseNavService {
 							.commit();
 				}
 				mFragmentManager.popBackStack();
+				// TODO navdrawer vs. disable homeasup
 				mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(backstackEntryCount > 1);
 			} catch (Exception ex) {
 				Log.e(TAG, "Exception trying to pop fragment!", ex);
@@ -207,7 +206,6 @@ public abstract class BaseNavService {
 	 */
 	protected abstract @StringRes int doubleBackToExit();
 
-	// TODO implement homeAsUp enabed/disabled
 	// TODO implement NavDrawer
 
 	/////////////////////////////////////////////////
@@ -221,8 +219,12 @@ public abstract class BaseNavService {
 	// Integration via HostActivityIntegrationFragment
 	/////////////////////////////////////////////////
 	void onActivityCreated(Bundle savedInstanceState) {
-		Log.d(TAG, "onActivityCreated");
-		// TODO
+		if (savedInstanceState != null) {
+			final int displayOptions = savedInstanceState.getInt(STATE_ACTIONBAR_DISPLAY_OPTIONS);
+			if (displayOptions != 0 && mActivity.getSupportActionBar() != null) {
+				mActivity.getSupportActionBar().setDisplayOptions(displayOptions);
+			}
+		}
 
 		if (mFragmentManager.findFragmentById(mHost.fragmentContainerId()) == null) {
 			mFragmentManager.beginTransaction()
@@ -232,12 +234,12 @@ public abstract class BaseNavService {
 	}
 
 	void onSaveInstanceState(Bundle outState) {
-		Log.d(TAG, "onSaveInstanceState");
-		// TODO
+        if (mActivity.getSupportActionBar() != null) {
+	        outState.putInt(STATE_ACTIONBAR_DISPLAY_OPTIONS, mActivity.getSupportActionBar().getDisplayOptions());
+        }
 	}
 
 	boolean onOptionsItemSelected(MenuItem menuItem) {
-		// TODO
 		switch (menuItem.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
