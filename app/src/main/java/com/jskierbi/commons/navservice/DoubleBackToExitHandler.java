@@ -6,7 +6,7 @@ import android.os.Message;
 /**
  * Created by jakub on 01/29/2015.
  */
-class DoubleBackToExit extends Handler {
+class DoubleBackToExitHandler extends Handler {
 
 	private static final long EXIT_DELAY_MS = 2000l;
 	private static final int MSG_ELAPSED = 240032;

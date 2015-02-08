@@ -29,7 +29,7 @@ public abstract class BaseNavService {
 	private final FragmentManager mFragmentManager;
 	private final NavServiceHost mHost;
 	private final ActionBarActivity mActivity;
-	private final DoubleBackToExit mDoubleBackToExit = new DoubleBackToExit();
+	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
 
 	private final State mState = new State();
 	@Parcel public static class State {
@@ -158,7 +158,7 @@ public abstract class BaseNavService {
 		} else {
 			// Finish activity, handle double back to exit
 			if (doubleBackToExit() != 0 && mActivity.isTaskRoot()) {
-				if (mDoubleBackToExit.isExitOnBack()) {
+				if (mDoubleBackToExitHandler.isExitOnBack()) {
 					mActivity.finish();
 				} else {
 					Toast.makeText(mActivity, doubleBackToExit(), Toast.LENGTH_SHORT).show();
