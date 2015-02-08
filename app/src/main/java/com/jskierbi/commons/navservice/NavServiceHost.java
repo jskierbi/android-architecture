@@ -9,7 +9,12 @@ import android.support.v7.widget.Toolbar;
 */
 public interface NavServiceHost {
 
+	/** Returns default toolbar from hosting activity */
 	public Toolbar toolbar();
+
+	/** Id of container, that holds fragments */
 	public @IdRes int fragmentContainerId();
+
+	/** Initial fragment to be shown by nav service */
 	public Fragment defaultFragment();
 }
