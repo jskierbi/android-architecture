@@ -6,7 +6,6 @@
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimaryDark" />
@@ -22,6 +21,7 @@
             android:layout_height="match_parent" />
 
         <fragment
+            android:id="@+id/navdrawer_fragment"
             android:name="com.jskierbi.app_template.ui.DrawerFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
