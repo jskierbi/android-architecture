@@ -8,10 +8,12 @@ import com.jskierbi.commons.navservice.BaseNavFragment;
 import com.jskierbi.commons.navservice.BaseNavService;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 /**
  * Created by jakub on 01/27/2015.
  */
+@Singleton
 public class NavService extends BaseNavService {
 
 	@Inject

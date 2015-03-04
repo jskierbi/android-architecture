@@ -18,6 +18,7 @@ import android.view.View;
 import android.widget.Toast;
 import com.jskierbi.app_template.R;
 import org.parceler.Parcel;
+import org.parceler.Parcels;
 
 /**
  * Base NavService class.
@@ -31,17 +32,19 @@ public abstract class BaseNavService {
 
 	private static final String TAG = BaseNavService.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
-	private static final String STATE_ACTIONBAR_DISPLAY_OPTIONS = TAG + "_STATE_ACTIONBAR_DISPLAY_OPTIONS";
+	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
 
 	private final FragmentManager mFragmentManager;
 	private final NavServiceHost mHost;
 	private final ActionBarActivity mActivity;
 	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
-	private final ActionBarDrawerToggle mDrawerToggle;
+	private ActionBarDrawerToggle mDrawerToggle;
 
-	private final State mState = new State();
+	private State mState = new State();
 	@Parcel public static class State {
 
+		int mActionbarDisplayOptions;
+		boolean mFlgNavUpEnabled = false;
 	}
 
 	/**
@@ -63,25 +66,7 @@ public abstract class BaseNavService {
 		mHost = (NavServiceHost) activity;
 		mFragmentManager = activity.getSupportFragmentManager();
 
-		{   // Initialize drawer toggle, if DrawerLayout available
-			View activityRootView = activity.findViewById(android.R.id.content);
-			DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
-			if (drawerLayout != null) {
-				mDrawerToggle = new ActionBarDrawerToggle(
-						activity,
-						drawerLayout,
-						mHost.toolbar(),
-						R.string.open_drawer,
-						R.string.close_drawer);
-				mDrawerToggle.setHomeAsUpIndicator(null);
-				drawerLayout.setDrawerListener(mDrawerToggle);
-				// syncState() moved to onActivityCreated method
-			} else {
-				mDrawerToggle = null;
-			}
-		}
-
-		// Initialize HostIntegrationFragment
+		// Initialize HostIntegrationFragment (provides lifecycle callbacks to this class)
 		Fragment integrationFragment = mFragmentManager.findFragmentByTag(TAG_HOST_INTEGRATION_FRAGMENT);
 		if (integrationFragment == null) {
 			HostActivityIntegrationFragment hostActivityIntegrationFragment = new HostActivityIntegrationFragment();
@@ -227,11 +212,35 @@ public abstract class BaseNavService {
 	// Integration via HostActivityIntegrationFragment
 	/////////////////////////////////////////////////
 	void onActivityCreated(Bundle savedInstanceState) {
-		if (savedInstanceState != null) {
-			final int displayOptions = savedInstanceState.getInt(STATE_ACTIONBAR_DISPLAY_OPTIONS);
-			if (displayOptions != 0 && mActivity.getSupportActionBar() != null) {
-				mActivity.getSupportActionBar().setDisplayOptions(displayOptions);
+
+		{   // Initialize drawer toggle, if DrawerLayout available
+			View activityRootView = mActivity.findViewById(android.R.id.content);
+			DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
+			if (drawerLayout != null) {
+				Log.d(TAG, "Drawer Toggle: ENABLED!");
+				mDrawerToggle = new ActionBarDrawerToggle(
+						mActivity,
+						drawerLayout,
+						mHost.toolbar(),
+						R.string.open_drawer,
+						R.string.close_drawer);
+				mDrawerToggle.setHomeAsUpIndicator(null);
+				drawerLayout.setDrawerListener(mDrawerToggle);
+				// syncState() moved to onActivityCreated method
+			} else {
+				Log.d(TAG, "Drawer Toggle: DISABLED!");
+				mDrawerToggle = null;
 			}
+		}
+
+		if (savedInstanceState != null) {
+			// Restore app state
+			State state = Parcels.unwrap(savedInstanceState.getParcelable(KEY_INSTANCE_STATE));
+			if (state != null) mState = state;
+			if (mState.mActionbarDisplayOptions != 0 && mActivity.getSupportActionBar() != null) {
+				mActivity.getSupportActionBar().setDisplayOptions(mState.mActionbarDisplayOptions);
+			}
+			updateHomeAsUpState(mState.mFlgNavUpEnabled);
 		} else {
 			// If not restoring state, initialize!
 			updateHomeAsUpState(false); // we're initializing - no nav up cause backstack is empty
@@ -251,7 +260,8 @@ public abstract class BaseNavService {
 
 	void onSaveInstanceState(Bundle outState) {
 		if (mActivity.getSupportActionBar() != null) {
-			outState.putInt(STATE_ACTIONBAR_DISPLAY_OPTIONS, mActivity.getSupportActionBar().getDisplayOptions());
+			mState.mActionbarDisplayOptions = mActivity.getSupportActionBar().getDisplayOptions();
+			outState.putParcelable(KEY_INSTANCE_STATE, Parcels.wrap(mState));
 		}
 	}
 
@@ -274,25 +284,18 @@ public abstract class BaseNavService {
 
 	private void updateHomeAsUpState(boolean flgNavBackEnabled) {
 		final ActionBar actionBar = mActivity.getSupportActionBar();
-		if (flgNavBackEnabled) {
-			Log.d(TAG, "navBackEnabled");
-			if (mDrawerToggle == null) {
-				actionBar.setDisplayHomeAsUpEnabled(true);
-				actionBar.setHomeButtonEnabled(true);
-			} else {
-				mDrawerToggle.setDrawerIndicatorEnabled(false);
-				mDrawerToggle.syncState();
-			}
+		mState.mFlgNavUpEnabled = flgNavBackEnabled;
+
+		if (mDrawerToggle == null) {
+			actionBar.setDisplayHomeAsUpEnabled(flgNavBackEnabled);
+			actionBar.setHomeButtonEnabled(flgNavBackEnabled);
 		} else {
-			if (mDrawerToggle == null) {
-				Log.d(TAG, "navBackDisabled - no nav drawer");
-				actionBar.setDisplayHomeAsUpEnabled(false);
-				actionBar.setHomeButtonEnabled(false);
-			} else {
-				Log.d(TAG, "navBackDisabled - nav drawer");
-				mDrawerToggle.setDrawerIndicatorEnabled(true);
-				mDrawerToggle.syncState();
+			mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
+			if (mState.mFlgNavUpEnabled) {
+				// Workaround https://stackoverflow.com/questions/26549008/missing-up-navigation-icon-after-switching-from-ics-actionbar-to-lollipop-toolba/26932351#26932351
+				mDrawerToggle.setHomeAsUpIndicator(mActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
 			}
+			mDrawerToggle.syncState();
 		}
 	}
 }
