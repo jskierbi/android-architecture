@@ -224,9 +224,15 @@ public abstract class BaseNavService {
 						mHost.toolbar(),
 						R.string.open_drawer,
 						R.string.close_drawer);
-				mDrawerToggle.setHomeAsUpIndicator(null);
 				drawerLayout.setDrawerListener(mDrawerToggle);
-				// syncState() moved to onActivityCreated method
+				// workaround https://stackoverflow.com/questions/26549008/missing-up-navigation-icon-after-switching-from-ics-actionbar-to-lollipop-toolba/26932351#26932351}
+				mDrawerToggle.setHomeAsUpIndicator(mActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
+				// workaround http://stackoverflow.com/questions/26582075/cannot-catch-toolbar-home-button-click-event
+				mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+					@Override public void onClick(View v) {
+						navigateBack();
+					}
+				});
 			} else {
 				Log.d(TAG, "Drawer Toggle: DISABLED!");
 				mDrawerToggle = null;
@@ -291,10 +297,6 @@ public abstract class BaseNavService {
 			actionBar.setHomeButtonEnabled(flgNavBackEnabled);
 		} else {
 			mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
-			if (mState.mFlgNavUpEnabled) {
-				// Workaround https://stackoverflow.com/questions/26549008/missing-up-navigation-icon-after-switching-from-ics-actionbar-to-lollipop-toolba/26932351#26932351
-				mDrawerToggle.setHomeAsUpIndicator(mActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
-			}
 			mDrawerToggle.syncState();
 		}
 	}
