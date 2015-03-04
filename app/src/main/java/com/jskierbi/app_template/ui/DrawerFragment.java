@@ -5,16 +5,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import com.jskierbi.commons.navservice.BaseDrawerFragment;
+import com.jskierbi.app_template.base.BaseAppFragment;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class DrawerFragment extends BaseDrawerFragment {
-
-	@Override protected List<Object> listModules() {
-		return Arrays.asList();
-	}
+public class DrawerFragment extends BaseAppFragment {
 
 	@Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		TextView textView = new TextView(getActivity());
