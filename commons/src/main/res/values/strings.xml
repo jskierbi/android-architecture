@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">commons</string>
+    <string name="open_drawer">Open navigation</string>
+    <string name="close_drawer">Close navigation</string>
+</resources>
