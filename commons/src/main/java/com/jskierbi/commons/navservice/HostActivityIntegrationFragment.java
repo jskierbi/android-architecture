@@ -21,6 +21,11 @@ public class HostActivityIntegrationFragment extends Fragment {
 		setHasOptionsMenu(true);
 	}
 
+	@Override public void onResume() {
+		super.onResume();
+		mNavService.onResume();
+	}
+
 	@Override public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		mNavService.onActivityCreated(savedInstanceState);

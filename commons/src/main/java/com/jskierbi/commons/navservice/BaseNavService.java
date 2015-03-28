@@ -264,6 +264,10 @@ public abstract class BaseNavService {
 		}
 	}
 
+	void onResume() {
+		updateHomeAsUpState(mState.mFlgNavUpEnabled);
+	}
+
 	void onSaveInstanceState(Bundle outState) {
 		if (mActivity.getSupportActionBar() != null) {
 			mState.mActionbarDisplayOptions = mActivity.getSupportActionBar().getDisplayOptions();
