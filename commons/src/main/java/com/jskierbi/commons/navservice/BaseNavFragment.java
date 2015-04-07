@@ -10,7 +10,7 @@ import com.jskierbi.commons.dagger.DaggerFragment;
 
 /**
  * Contains code to fix loosing fragment transaction animation after screen rotation
- * To be used with {@link BaseNavService}
+ * To be used with {@link NavService}
  */
 public abstract class BaseNavFragment extends DaggerFragment {
 

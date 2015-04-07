@@ -9,8 +9,8 @@ import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseAppActivity;
-import com.jskierbi.app_template.services.NavService;
 import com.jskierbi.commons.dagger.ForApplication;
+import com.jskierbi.commons.navservice.NavService;
 import com.jskierbi.commons.navservice.NavServiceHost;
 
 import javax.inject.Inject;
@@ -41,6 +41,9 @@ public class MainActivity extends BaseAppActivity implements NavServiceHost {
 	}
 	@Override public Fragment defaultFragment() {
 		return new MainFragment();
+	}
+	@Override public int doubleBackToExit() {
+		return 0;
 	}
 
 	@Override public void onBackPressed() {

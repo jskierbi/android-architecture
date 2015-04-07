@@ -1,6 +1,7 @@
 package com.jskierbi.app_template.modules;
 
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 import com.jskierbi.app_template.base.BaseAppActivity;
 import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.DrawerFragment;
@@ -38,6 +39,10 @@ public class ActivityModule {
 	}
 
 	@Provides @Singleton BaseAppActivity provideActivity() {
+		return mActivity;
+	}
+
+	@Provides @Singleton ActionBarActivity provideActionBarActivity() {
 		return mActivity;
 	}
 }

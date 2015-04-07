@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,17 +19,21 @@ import com.jskierbi.commons.R;
 import org.parceler.Parcel;
 import org.parceler.Parcels;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 /**
  * Base NavService class.
  * Manages toolbar home as up and DrawerToggle (if DrawerLayout is available in activity)
  *
  * Integration with Activity:
  * 1. implement {@link NavServiceHost} interface
- * 2. call {@link BaseNavService#onBackPressed()} from {@link Activity#onBackPressed}
+ * 2. call {@link NavService#onBackPressed()} from {@link Activity#onBackPressed}
  */
-public abstract class BaseNavService {
+@Singleton
+public class NavService {
 
-	private static final String TAG = BaseNavService.class.getSimpleName();
+	private static final String TAG = NavService.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
 
@@ -55,7 +58,8 @@ public abstract class BaseNavService {
 	 * @param activity to host this navigation service, have to extend
 	 *                 {@link ActionBarActivity} and implement {@link NavServiceHost} interface.
 	 */
-	public BaseNavService(ActionBarActivity activity) {
+	@Inject
+	public NavService(ActionBarActivity activity) {
 
 		// Runtime check
 		if (!(activity instanceof NavServiceHost)) {
@@ -160,11 +164,11 @@ public abstract class BaseNavService {
 			}
 		} else {
 			// Finish activity, handle double back to exit
-			if (doubleBackToExit() != 0 && mActivity.isTaskRoot()) {
+			if (mHost.doubleBackToExit() != 0 && mActivity.isTaskRoot()) {
 				if (mDoubleBackToExitHandler.isExitOnBack()) {
 					mActivity.finish();
 				} else {
-					Toast.makeText(mActivity, doubleBackToExit(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(mActivity, mHost.doubleBackToExit(), Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				mActivity.finish();
@@ -190,16 +194,6 @@ public abstract class BaseNavService {
 		}
 		updateHomeAsUpState(false); // Nav back is not available
 	}
-
-	/** Default fragment to be put to container */
-	protected abstract BaseNavFragment defaultFragment();
-
-	/**
-	 * 0 to disable double back to exit, string res to enable.
-	 * String res will be used by toast shown on first back click.
-	 * @return string res to be displayed on double back to exit, or 0 to disable this feature.
-	 */
-	protected abstract @StringRes int doubleBackToExit();
 
 	/////////////////////////////////////////////////
 	// Integration via Activity

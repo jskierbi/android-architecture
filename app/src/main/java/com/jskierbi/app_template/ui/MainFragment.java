@@ -8,7 +8,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseAppFragment;
-import com.jskierbi.app_template.services.NavService;
+import com.jskierbi.commons.navservice.NavService;
 
 import javax.inject.Inject;
 
