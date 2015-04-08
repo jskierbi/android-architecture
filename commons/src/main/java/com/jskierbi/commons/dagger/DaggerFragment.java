@@ -1,31 +1,45 @@
 package com.jskierbi.commons.dagger;
 
-import android.os.Bundle;
+import android.app.Activity;
 import android.support.v4.app.Fragment;
 import dagger.ObjectGraph;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Base class for creating injectible fragment subclasses.
  */
-public abstract class DaggerFragment extends Fragment {
+public abstract class DaggerFragment extends Fragment implements Injector {
 
 	private ObjectGraph mObjectGraph;
 
-	@Override public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
+	@Override public void onAttach(Activity activity) {
+		super.onAttach(activity);
 
 		if (mObjectGraph == null) {
-			DaggerActivity activity = (DaggerActivity) getActivity();
-			mObjectGraph = activity.getObjectGraph().plus(listModules().toArray());
+			Injector activityInjector = (Injector) getActivity();
+			mObjectGraph = activityInjector.getObjectGraph().plus(listModules().toArray());
 			mObjectGraph.inject(this);
 		}
 	}
 
-	public void inject(Object obj) {
+	@Override public void onDestroy() {
+		mObjectGraph = null;
+		super.onDestroy();
+	}
+
+	protected List<Object> listModules() {
+		List<Object> modules = new ArrayList<>();
+		modules.add(new DaggerFragmentModule(this, this));
+		return modules;
+	}
+
+	@Override public void inject(Object obj) {
 		mObjectGraph.inject(obj);
 	}
 
-	protected abstract List<Object> listModules();
+	@Override public ObjectGraph getObjectGraph() {
+		return mObjectGraph;
+	}
 }

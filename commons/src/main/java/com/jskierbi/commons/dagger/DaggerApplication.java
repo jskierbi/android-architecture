@@ -1,14 +1,19 @@
 package com.jskierbi.commons.dagger;
 
 import android.app.Application;
+import android.content.Context;
+import dagger.Module;
 import dagger.ObjectGraph;
+import dagger.Provides;
 
+import javax.inject.Singleton;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Base class for creating injectible application subclass.
  */
-public abstract class DaggerApplication extends Application {
+public abstract class DaggerApplication extends Application implements Injector {
 
 	private ObjectGraph mObjectGraph;
 
@@ -18,13 +23,39 @@ public abstract class DaggerApplication extends Application {
 		mObjectGraph.inject(this);
 	}
 
+	protected List<Object> listModules() {
+		List<Object> modules = new ArrayList<Object>();
+		modules.add(new ApplicationModule(this, this));
+		return modules;
+	}
+
+	@Override
 	public void inject(Object obj) {
 		mObjectGraph.inject(obj);
 	}
 
-	ObjectGraph getObjectGraph() {
+	@Override
+	public ObjectGraph getObjectGraph() {
 		return mObjectGraph;
 	}
 
-	protected abstract List<Object> listModules();
+	@Module(library = true)
+	public static class ApplicationModule {
+
+		private Application mApplication;
+		private Injector mInjector;
+
+		public ApplicationModule(Application mApplication, Injector mInjector) {
+			this.mApplication = mApplication;
+			this.mInjector = mInjector;
+		}
+
+		@Provides @ForApplication @Singleton Context provideApplicationContext() {
+			return mApplication.getApplicationContext();
+		}
+
+		@Provides @ForApplication Injector provideApplicationInjector() {
+			return mInjector;
+		}
+	}
 }

@@ -1,7 +1,7 @@
 package com.jskierbi.commons.dagger;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.preference.PreferenceActivity;
 import dagger.ObjectGraph;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by jakub on 04/08/2015.
  */
-public class DaggerActivity extends Activity implements Injector {
+public class DaggerPreferenceActivity extends PreferenceActivity implements Injector {
 
 	private ObjectGraph mObjectGraph;
 
