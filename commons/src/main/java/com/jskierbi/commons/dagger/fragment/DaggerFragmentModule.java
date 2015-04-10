@@ -1,5 +1,7 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.fragment;
 
+import com.jskierbi.commons.dagger.ForFragment;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.Module;
 import dagger.Provides;
 

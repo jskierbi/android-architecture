@@ -1,9 +1,8 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.fragment;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.os.Build;
-import android.preference.PreferenceFragment;
+import android.support.v4.app.Fragment;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.ObjectGraph;
 
 import java.util.ArrayList;
@@ -12,8 +11,7 @@ import java.util.List;
 /**
  * Base class for creating injectible fragment subclasses.
  */
-@TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public abstract class DaggerPreferenceFragment extends PreferenceFragment implements Injector {
+public abstract class DaggerFragment extends Fragment implements Injector {
 
 	private ObjectGraph mObjectGraph;
 

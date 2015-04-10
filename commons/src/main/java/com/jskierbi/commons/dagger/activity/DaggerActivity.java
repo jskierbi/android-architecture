@@ -1,16 +1,17 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.ObjectGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Base class for creating injectable Activities
+ * Created by jakub on 04/08/2015.
  */
-public abstract class DaggerActionBarActivity extends ActionBarActivity implements Injector {
+public class DaggerActivity extends Activity implements Injector {
 
 	private ObjectGraph mObjectGraph;
 

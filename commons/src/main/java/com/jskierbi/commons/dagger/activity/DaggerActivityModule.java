@@ -1,7 +1,9 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.activity;
 
 import android.app.Activity;
 import android.content.Context;
+import com.jskierbi.commons.dagger.ForActivity;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.Module;
 import dagger.Provides;
 

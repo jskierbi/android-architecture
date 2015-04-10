@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.AnimRes;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import com.jskierbi.commons.dagger.DaggerFragment;
+import com.jskierbi.commons.dagger.fragment.DaggerFragment;
 
 /**
  * Contains code to fix loosing fragment transaction animation after screen rotation

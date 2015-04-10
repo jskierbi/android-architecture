@@ -1,7 +1,8 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.activity;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.ObjectGraph;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Created by jakub on 04/08/2015.
  */
-public class DaggerActivity extends Activity implements Injector {
+public class DaggerFragmentActivity extends FragmentActivity implements Injector {
 
 	private ObjectGraph mObjectGraph;
 

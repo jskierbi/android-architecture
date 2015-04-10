@@ -1,12 +1,9 @@
-package com.jskierbi.commons.dagger;
+package com.jskierbi.commons.dagger.application;
 
 import android.app.Application;
-import android.content.Context;
-import dagger.Module;
+import com.jskierbi.commons.dagger.Injector;
 import dagger.ObjectGraph;
-import dagger.Provides;
 
-import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +22,7 @@ public abstract class DaggerApplication extends Application implements Injector 
 
 	protected List<Object> listModules() {
 		List<Object> modules = new ArrayList<Object>();
-		modules.add(new ApplicationModule(this, this));
+		modules.add(new DaggerApplicationModule(this, this));
 		return modules;
 	}
 
@@ -39,23 +36,4 @@ public abstract class DaggerApplication extends Application implements Injector 
 		return mObjectGraph;
 	}
 
-	@Module(library = true)
-	public static class ApplicationModule {
-
-		private Application mApplication;
-		private Injector mInjector;
-
-		public ApplicationModule(Application mApplication, Injector mInjector) {
-			this.mApplication = mApplication;
-			this.mInjector = mInjector;
-		}
-
-		@Provides @ForApplication @Singleton Context provideApplicationContext() {
-			return mApplication.getApplicationContext();
-		}
-
-		@Provides @ForApplication Injector provideApplicationInjector() {
-			return mInjector;
-		}
-	}
 }
