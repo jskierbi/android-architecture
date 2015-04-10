@@ -19,9 +19,6 @@ import com.jskierbi.commons.R;
 import org.parceler.Parcel;
 import org.parceler.Parcels;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
  * Base NavService class.
  * Manages toolbar home as up and DrawerToggle (if DrawerLayout is available in activity)
@@ -30,7 +27,6 @@ import javax.inject.Singleton;
  * 1. implement {@link NavServiceHost} interface
  * 2. call {@link NavService#onBackPressed()} from {@link Activity#onBackPressed}
  */
-@Singleton
 public class NavService {
 
 	private static final String TAG = NavService.class.getSimpleName();
@@ -58,7 +54,6 @@ public class NavService {
 	 * @param activity to host this navigation service, have to extend
 	 *                 {@link ActionBarActivity} and implement {@link NavServiceHost} interface.
 	 */
-	@Inject
 	public NavService(ActionBarActivity activity) {
 
 		// Runtime check

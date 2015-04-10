@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import com.jskierbi.app_template.R;
-import com.jskierbi.app_template.base.BaseAppFragment;
+import com.jskierbi.commons.navservice.BaseNavFragment;
 import com.jskierbi.commons.navservice.NavService;
 
 import javax.inject.Inject;
@@ -16,7 +16,7 @@ import javax.inject.Inject;
 /**
  * Created by jakub on 01/28/2015.
  */
-public class DetailFragment extends BaseAppFragment {
+public class DetailFragment extends BaseNavFragment {
 
 	private static final String TAG = DetailFragment.class.getSimpleName();
 	private static final String ARG_NO = "ARG_NO";
@@ -39,7 +39,7 @@ public class DetailFragment extends BaseAppFragment {
 			btnToDetailsAddBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						BaseAppFragment fragment = new DetailFragment();
+						BaseNavFragment fragment = new DetailFragment();
 						fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
@@ -59,7 +59,7 @@ public class DetailFragment extends BaseAppFragment {
 			btnToDetailsNoBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						BaseAppFragment fragment = new DetailFragment();
+						BaseNavFragment fragment = new DetailFragment();
 						fragment.setCustomAnimations(R.anim.from_bottom, R.anim.to_top, R.anim.from_top, R.anim.to_bottom);
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);

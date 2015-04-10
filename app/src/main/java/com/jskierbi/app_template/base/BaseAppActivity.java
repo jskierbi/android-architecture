@@ -1,9 +1,8 @@
 package com.jskierbi.app_template.base;
 
 import com.jskierbi.app_template.modules.ActivityModule;
-import com.jskierbi.commons.dagger.DaggerActionBarActivity;
+import com.jskierbi.commons.dagger.activity.DaggerActionBarActivity;
 
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -12,6 +11,8 @@ import java.util.List;
 public class BaseAppActivity extends DaggerActionBarActivity {
 
 	@Override protected List<Object> listModules() {
-		return Arrays.<Object>asList(new ActivityModule(this));
+		List<Object> modules = super.listModules();
+		modules.add(new ActivityModule(this));
+		return modules;
 	}
 }
