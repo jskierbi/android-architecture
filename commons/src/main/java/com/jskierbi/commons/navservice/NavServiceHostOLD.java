@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 /**
  * Created by jakub on 02/06/2015.
  */
-public interface NavServiceHost {
+public interface NavServiceHostOLD {
 
 	/** Returns default toolbar from hosting activity */
 	public Toolbar toolbar();

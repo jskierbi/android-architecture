@@ -2,9 +2,9 @@ package com.jskierbi.app_template.modules;
 
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.base.BaseAppActivity;
+import com.jskierbi.app_template.ui.ActivityDrawerToolbar;
 import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.DrawerFragment;
-import com.jskierbi.app_template.ui.MainActivity;
 import com.jskierbi.app_template.ui.MainFragment;
 import com.jskierbi.commons.navservice.NavService;
 import dagger.Module;
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
  */
 @Module(
 		injects = {
-				MainActivity.class,
+				ActivityDrawerToolbar.class,
 
 				MainFragment.class,
 				DetailFragment.class,

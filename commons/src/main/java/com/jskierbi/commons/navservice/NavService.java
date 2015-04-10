@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.IdRes;
+import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,9 +28,15 @@ import org.parceler.Parcels;
  * Manages toolbar home as up and DrawerToggle (if DrawerLayout is available in activity)
  *
  * Integration with Activity:
- * 1. implement {@link NavServiceHost} interface
+ * 1. implement {@link NavServiceHostOLD} interface
  * 2. call {@link NavService#onBackPressed()} from {@link Activity#onBackPressed}
  */
+
+// TODOJS no toolbar
+// TODOJS activity does not extend ActionBarActivity
+// TODOJS no drawer
+// TODOJS single drawer
+// TODOJS double drawer
 public class NavService {
 
 	private static final String TAG = NavService.class.getSimpleName();
@@ -34,10 +44,22 @@ public class NavService {
 	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
 
 	private final FragmentManager mFragmentManager;
-	private final NavServiceHost mHost;
-	private final ActionBarActivity mActivity;
+
+	private final FragmentActivity mActivity;
+	private final ActionBarActivity mActionBarActivity;
 	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
 	private ActionBarDrawerToggle mDrawerToggle;
+
+	//	private final NavServiceHostOLD mHost;
+	private final @IdRes int mContainerId;
+	private final Class mDefaultFragment;
+
+	private final boolean mFlgDoubleBackToExit;
+	private final @StringRes int mDoubleBackToExitText;
+
+	private final @IdRes int mToolbarId;
+	private final @IdRes int mPrimaryDrawerId;
+	private final @IdRes int mSecondaryDrawerId;
 
 	private State mState = new State();
 	@Parcel public static class State {
@@ -52,17 +74,27 @@ public class NavService {
 	 * to manage toolbar state (uses Fragments' lifecycle callbacks to save and restore state)
 	 *
 	 * @param activity to host this navigation service, have to extend
-	 *                 {@link ActionBarActivity} and implement {@link NavServiceHost} interface.
+	 *                 {@link ActionBarActivity} and implement {@link NavServiceHostOLD} interface.
 	 */
-	public NavService(ActionBarActivity activity) {
+	public NavService(FragmentActivity activity) {
 
-		// Runtime check
-		if (!(activity instanceof NavServiceHost)) {
-			throw new IllegalArgumentException("Activity has to implement NavService.Host interface!");
+		NavigationHost navigationHost = activity.getClass().getAnnotation(NavigationHost.class);
+		if (navigationHost == null) {
+			throw new IllegalArgumentException("Activity hosting NavService requires @NavigationHost annotation");
 		}
 
+		mContainerId = navigationHost.fragmentContainerId();
+		mToolbarId = navigationHost.toolbarId();
+		mFlgDoubleBackToExit = navigationHost.doubleBackToExitEnabled();
+		mDoubleBackToExitText = navigationHost.doubleBackToExitText();
+		mPrimaryDrawerId = navigationHost.primaryDrawerId();
+		mSecondaryDrawerId = navigationHost.secondaryDrawerId();
+		mDefaultFragment = navigationHost.defaultFragment();
+
 		mActivity = activity;
-		mHost = (NavServiceHost) activity;
+		mActionBarActivity = mActivity instanceof ActionBarActivity ?
+				(ActionBarActivity) activity :
+				null;
 		mFragmentManager = activity.getSupportFragmentManager();
 
 		// Initialize HostIntegrationFragment (provides lifecycle callbacks to this class)
@@ -80,6 +112,8 @@ public class NavService {
 
 	}
 
+	// TODO change parameter to base Fragment
+	// TODO support both android.app.Fragment and android.support.v4.app.Fragment
 	public void navigateTo(BaseNavFragment fragment) {
 		navigateTo(fragment, true);
 	}
@@ -100,7 +134,7 @@ public class NavService {
 	public void navigateTo(BaseNavFragment nextFragment, boolean flgAddToBackstack) {
 
 		try {
-			Fragment currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId());
+			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
 			if (currentFragment instanceof BaseNavFragment) {
 				// For current fragment, set animation that will be played when navigating back
 				// This is to enable defining animations on single fragment that will be respected by previous
@@ -125,7 +159,7 @@ public class NavService {
 						nextFragment.getPopEnterAnim(),
 						nextFragment.getPopExitAnim());
 			}
-			transaction.replace(mHost.fragmentContainerId(), nextFragment);
+			transaction.replace(mContainerId, nextFragment);
 			if (flgAddToBackstack) {
 				transaction.addToBackStack(null);
 			}
@@ -145,7 +179,7 @@ public class NavService {
 			// Navigate back in fragment hierarchy
 			try {
 				Fragment currentFragment;
-				if ((currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId())) != null) {
+				if ((currentFragment = mFragmentManager.findFragmentById(mContainerId)) != null) {
 					// Current fragment can be added/replaced without adding to backstack. If this is the case,
 					// after popping backstack current fragment will still be visible - so we need to remove it manually
 					// before popping!
@@ -159,11 +193,11 @@ public class NavService {
 			}
 		} else {
 			// Finish activity, handle double back to exit
-			if (mHost.doubleBackToExit() != 0 && mActivity.isTaskRoot()) {
+			if (mFlgDoubleBackToExit && mActivity.isTaskRoot()) {
 				if (mDoubleBackToExitHandler.isExitOnBack()) {
 					mActivity.finish();
 				} else {
-					Toast.makeText(mActivity, mHost.doubleBackToExit(), Toast.LENGTH_SHORT).show();
+					Toast.makeText(mActivity, mDoubleBackToExitText, Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				mActivity.finish();
@@ -178,7 +212,7 @@ public class NavService {
 		final int backstackEntryCount = mFragmentManager.getBackStackEntryCount();
 		for (int i = mFragmentManager.getBackStackEntryCount(); i > 0; --i) {
 			// Current fragment could has been added outside transaction - remove it!
-			final Fragment currentFragment = mFragmentManager.findFragmentById(mHost.fragmentContainerId());
+			final Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
 			if (backstackEntryCount > 0 && currentFragment != null) {
 				mFragmentManager.beginTransaction()
 						.remove(currentFragment)
@@ -202,6 +236,13 @@ public class NavService {
 	/////////////////////////////////////////////////
 	void onActivityCreated(Bundle savedInstanceState) {
 
+		// TODOJS perform runtime checks of annotated fields
+		// 1. FragmentContainer should extend FrameLayout
+		// 2. If toolbar ID set, it have to exist in view hierarchy
+		// 3. If double back to exti set, there should be also text set
+		// 4. If primary drawer layout id is set, it have to exist in view hierarchy.
+		// 5. If secondary drawer layout id is set, it have to exist in view hierarchy.
+
 		{   // Initialize drawer toggle, if DrawerLayout available
 			View activityRootView = mActivity.findViewById(android.R.id.content);
 			DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
@@ -210,12 +251,12 @@ public class NavService {
 				mDrawerToggle = new ActionBarDrawerToggle(
 						mActivity,
 						drawerLayout,
-						mHost.toolbar(),
+						(Toolbar) mActivity.findViewById(mToolbarId), // TODOJS fix this when no toolbar available!!!
 						R.string.open_drawer,
 						R.string.close_drawer);
 				drawerLayout.setDrawerListener(mDrawerToggle);
 				// workaround https://stackoverflow.com/questions/26549008/missing-up-navigation-icon-after-switching-from-ics-actionbar-to-lollipop-toolba/26932351#26932351}
-				mDrawerToggle.setHomeAsUpIndicator(mActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
+				mDrawerToggle.setHomeAsUpIndicator(mActionBarActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
 				// workaround http://stackoverflow.com/questions/26582075/cannot-catch-toolbar-home-button-click-event
 				mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
 					@Override public void onClick(View v) {
@@ -232,24 +273,31 @@ public class NavService {
 			// Restore app state
 			State state = Parcels.unwrap(savedInstanceState.getParcelable(KEY_INSTANCE_STATE));
 			if (state != null) mState = state;
-			if (mState.mActionbarDisplayOptions != 0 && mActivity.getSupportActionBar() != null) {
-				mActivity.getSupportActionBar().setDisplayOptions(mState.mActionbarDisplayOptions);
+			if (mState.mActionbarDisplayOptions != 0 && mActionBarActivity.getSupportActionBar() != null) {
+				mActionBarActivity.getSupportActionBar().setDisplayOptions(mState.mActionbarDisplayOptions);
 			}
 			updateHomeAsUpState(mState.mFlgNavUpEnabled);
 		} else {
 			// If not restoring state, initialize!
 			updateHomeAsUpState(false); // we're initializing - no nav up cause backstack is empty
 			if (mDrawerToggle != null) {
-				mActivity.getSupportActionBar().setHomeButtonEnabled(true);
-				mActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+				mActionBarActivity.getSupportActionBar().setHomeButtonEnabled(true);
+				mActionBarActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 				mDrawerToggle.syncState();
 			}
 		}
 
-		if (mFragmentManager.findFragmentById(mHost.fragmentContainerId()) == null) {
-			mFragmentManager.beginTransaction()
-					.add(mHost.fragmentContainerId(), mHost.defaultFragment())
-					.commit();
+		if (mFragmentManager.findFragmentById(mContainerId) == null) {
+			try {
+				Fragment fragment = (Fragment) mDefaultFragment.newInstance();
+				mFragmentManager.beginTransaction()
+						.add(mContainerId, fragment)
+						.commit();
+			} catch (InstantiationException ex) {
+				Log.e(TAG, "Cannot instantinate default fragment", ex);
+			} catch (IllegalAccessException ex) {
+				Log.e(TAG, "Cannot instantinate default fragment", ex);
+			}
 		}
 	}
 
@@ -258,8 +306,8 @@ public class NavService {
 	}
 
 	void onSaveInstanceState(Bundle outState) {
-		if (mActivity.getSupportActionBar() != null) {
-			mState.mActionbarDisplayOptions = mActivity.getSupportActionBar().getDisplayOptions();
+		if (mActionBarActivity.getSupportActionBar() != null) {
+			mState.mActionbarDisplayOptions = mActionBarActivity.getSupportActionBar().getDisplayOptions();
 			outState.putParcelable(KEY_INSTANCE_STATE, Parcels.wrap(mState));
 		}
 	}
@@ -282,7 +330,7 @@ public class NavService {
 	}
 
 	private void updateHomeAsUpState(boolean flgNavBackEnabled) {
-		final ActionBar actionBar = mActivity.getSupportActionBar();
+		final ActionBar actionBar = mActionBarActivity.getSupportActionBar();
 		mState.mFlgNavUpEnabled = flgNavBackEnabled;
 
 		if (mDrawerToggle == null) {
