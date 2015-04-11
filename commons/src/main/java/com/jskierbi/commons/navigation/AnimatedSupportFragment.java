@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
@@ -10,9 +10,9 @@ import com.jskierbi.commons.dagger.fragment.DaggerFragment;
 
 /**
  * Contains code to fix loosing fragment transaction animation after screen rotation
- * To be used with {@link NavService}
+ * To be used with {@link NavigationController}
  */
-public abstract class BaseNavFragment extends DaggerFragment {
+public abstract class AnimatedSupportFragment extends DaggerFragment {
 
 	private static final String STATE_ENTER_ANIM = "STATE_ENTER_ANIM";
 	private static final String STATE_EXIT_ANIM = "STATE_EXIT_ANIM";

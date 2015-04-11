@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.view.View;
 import android.view.ViewGroup;

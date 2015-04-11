@@ -9,9 +9,9 @@ import butterknife.InjectView;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseAppActivity;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.commons.navservice.NavService;
-import com.jskierbi.commons.navservice.NavServiceHostOLD;
-import com.jskierbi.commons.navservice.NavigationHost;
+import com.jskierbi.commons.navigation.NavServiceHostOLD;
+import com.jskierbi.commons.navigation.NavigationController;
+import com.jskierbi.commons.navigation.NavigationHost;
 
 import javax.inject.Inject;
 
@@ -30,7 +30,7 @@ public class ActivityDrawerToolbar extends BaseAppActivity implements NavService
 	@InjectView(R.id.toolbar) Toolbar mToolbar;
 
 	@Inject @ForApplication Context mContext;
-	@Inject NavService mNavService;
+	@Inject NavigationController mNavigationController;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -53,6 +53,6 @@ public class ActivityDrawerToolbar extends BaseAppActivity implements NavService
 	}
 
 	@Override public void onBackPressed() {
-		mNavService.onBackPressed();
+		mNavigationController.onBackPressed();
 	}
 }

@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -10,10 +10,10 @@ import android.view.MenuItem;
  */
 public class HostActivityIntegrationFragment extends Fragment {
 
-	private NavService mNavService;
+	private NavigationController mNavigationController;
 
-	void setNavService(NavService navService) {
-		mNavService = navService;
+	void setNavService(NavigationController navigationController) {
+		mNavigationController = navigationController;
 	}
 
 	@Override public void onCreate(Bundle savedInstanceState) {
@@ -23,25 +23,25 @@ public class HostActivityIntegrationFragment extends Fragment {
 
 	@Override public void onResume() {
 		super.onResume();
-		mNavService.onResume();
+		mNavigationController.onResume();
 	}
 
 	@Override public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		mNavService.onActivityCreated(savedInstanceState);
+		mNavigationController.onActivityCreated(savedInstanceState);
 	}
 
 	@Override public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		mNavService.onSaveInstanceState(outState);
+		mNavigationController.onSaveInstanceState(outState);
 	}
 
 	@Override public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);
-		mNavService.onConfigurationChanged(newConfig);
+		mNavigationController.onConfigurationChanged(newConfig);
 	}
 
 	@Override public boolean onOptionsItemSelected(MenuItem item) {
-		return mNavService.onOptionsItemSelected(item);
+		return mNavigationController.onOptionsItemSelected(item);
 	}
 }

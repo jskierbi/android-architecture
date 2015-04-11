@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.os.Handler;
 import android.os.Message;

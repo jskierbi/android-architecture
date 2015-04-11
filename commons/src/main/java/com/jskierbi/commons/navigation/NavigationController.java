@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -28,8 +28,8 @@ import org.parceler.Parcels;
  * Manages toolbar home as up and DrawerToggle (if DrawerLayout is available in activity)
  *
  * Integration with Activity:
- * 1. implement {@link NavServiceHostOLD} interface
- * 2. call {@link NavService#onBackPressed()} from {@link Activity#onBackPressed}
+ * 1. annotate activity with @NavigationHost
+ * 2. call {@link NavigationController#onBackPressed()} from {@link Activity#onBackPressed}
  */
 
 // TODOJS no toolbar
@@ -37,9 +37,9 @@ import org.parceler.Parcels;
 // TODOJS no drawer
 // TODOJS single drawer
 // TODOJS double drawer
-public class NavService {
+public class NavigationController {
 
-	private static final String TAG = NavService.class.getSimpleName();
+	private static final String TAG = NavigationController.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
 
@@ -61,6 +61,7 @@ public class NavService {
 	private final @IdRes int mPrimaryDrawerId;
 	private final @IdRes int mSecondaryDrawerId;
 
+	// TODO remove parceler
 	private State mState = new State();
 	@Parcel public static class State {
 
@@ -76,7 +77,7 @@ public class NavService {
 	 * @param activity to host this navigation service, have to extend
 	 *                 {@link ActionBarActivity} and implement {@link NavServiceHostOLD} interface.
 	 */
-	public NavService(FragmentActivity activity) {
+	public NavigationController(FragmentActivity activity) {
 
 		NavigationHost navigationHost = activity.getClass().getAnnotation(NavigationHost.class);
 		if (navigationHost == null) {
@@ -114,16 +115,16 @@ public class NavService {
 
 	// TODO change parameter to base Fragment
 	// TODO support both android.app.Fragment and android.support.v4.app.Fragment
-	public void navigateTo(BaseNavFragment fragment) {
+	public void navigateTo(AnimatedSupportFragment fragment) {
 		navigateTo(fragment, true);
 	}
 
 	/**
 	 * Base navigation method. Adds proper support for transition animations.
-	 * Animations are defined in BaseNavFragment using {@link BaseNavFragment#setCustomAnimations}
+	 * Animations are defined in BaseNavFragment using {@link AnimatedSupportFragment#setCustomAnimations}
 	 *
 	 * Addressed problems:
-	 * * When changing orientations, custom animations from transactions are lost. This is fixed in {@link BaseNavFragment}
+	 * * When changing orientations, custom animations from transactions are lost. This is fixed in {@link AnimatedSupportFragment}
 	 * * When navigating back, popExit for current fragment and popEnter for previous fragment are inconsistent.
 	 * This method sets popEnter for previous fragment using popEnter from this fragment - so popEnter in each
 	 * fragment is de facto used for previous fragment. This enables to define fragment transitions on sigle fragment object.
@@ -131,15 +132,15 @@ public class NavService {
 	 * @param nextFragment to navigate to
 	 * @param flgAddToBackstack whether to add transaction to backstack or not.
 	 */
-	public void navigateTo(BaseNavFragment nextFragment, boolean flgAddToBackstack) {
+	public void navigateTo(AnimatedSupportFragment nextFragment, boolean flgAddToBackstack) {
 
 		try {
 			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
-			if (currentFragment instanceof BaseNavFragment) {
+			if (currentFragment instanceof AnimatedSupportFragment) {
 				// For current fragment, set animation that will be played when navigating back
 				// This is to enable defining animations on single fragment that will be respected by previous
 				// fragment in backstack
-				((BaseNavFragment) currentFragment).setPopEnterAnim(nextFragment.getPopEnterAnim());
+				((AnimatedSupportFragment) currentFragment).setPopEnterAnim(nextFragment.getPopEnterAnim());
 			}
 
 			// Use case: exit via home, return to application. When popEnter animation set by fragment is used,

@@ -1,4 +1,4 @@
-package com.jskierbi.commons.navservice;
+package com.jskierbi.commons.navigation;
 
 import android.support.annotation.IdRes;
 import android.support.annotation.StringRes;

@@ -6,7 +6,7 @@ import com.jskierbi.app_template.ui.ActivityDrawerToolbar;
 import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.DrawerFragment;
 import com.jskierbi.app_template.ui.MainFragment;
-import com.jskierbi.commons.navservice.NavService;
+import com.jskierbi.commons.navigation.NavigationController;
 import dagger.Module;
 import dagger.Provides;
 
@@ -38,7 +38,7 @@ public class ActivityModule {
 		return mActivity.getSupportFragmentManager();
 	}
 
-	@Provides @Singleton NavService provideNavService() {
-		return new NavService(mActivity);
+	@Provides @Singleton NavigationController provideNavService() {
+		return new NavigationController(mActivity);
 	}
 }

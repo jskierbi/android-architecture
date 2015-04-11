@@ -8,20 +8,20 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import com.jskierbi.app_template.R;
-import com.jskierbi.commons.navservice.BaseNavFragment;
-import com.jskierbi.commons.navservice.NavService;
+import com.jskierbi.commons.navigation.AnimatedSupportFragment;
+import com.jskierbi.commons.navigation.NavigationController;
 
 import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/28/2015.
  */
-public class DetailFragment extends BaseNavFragment {
+public class DetailFragment extends AnimatedSupportFragment {
 
 	private static final String TAG = DetailFragment.class.getSimpleName();
 	private static final String ARG_NO = "ARG_NO";
 
-	@Inject NavService mNavService;
+	@Inject NavigationController mNavigationController;
 
 	public DetailFragment() {
 		Bundle bundle = new Bundle();
@@ -39,12 +39,12 @@ public class DetailFragment extends BaseNavFragment {
 			btnToDetailsAddBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						BaseNavFragment fragment = new DetailFragment();
+						AnimatedSupportFragment fragment = new DetailFragment();
 						fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mNavService.navigateTo(fragment, true);
+						mNavigationController.navigateTo(fragment, true);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -59,12 +59,12 @@ public class DetailFragment extends BaseNavFragment {
 			btnToDetailsNoBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						BaseNavFragment fragment = new DetailFragment();
+						AnimatedSupportFragment fragment = new DetailFragment();
 						fragment.setCustomAnimations(R.anim.from_bottom, R.anim.to_top, R.anim.from_top, R.anim.to_bottom);
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mNavService.navigateTo(fragment, false);
+						mNavigationController.navigateTo(fragment, false);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -79,7 +79,7 @@ public class DetailFragment extends BaseNavFragment {
 			btnClearBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						mNavService.clearBackstack();
+						mNavigationController.clearBackstack();
 					} catch (Exception ex) {
 
 					}
@@ -94,7 +94,7 @@ public class DetailFragment extends BaseNavFragment {
 			btnBack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						mNavService.navigateBack();
+						mNavigationController.navigateBack();
 					} catch (Exception ex) {
 						Log.e(TAG, "Back button exception", ex);
 					}
