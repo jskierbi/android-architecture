@@ -8,7 +8,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.jskierbi.app_template.R;
 import com.jskierbi.commons.navigation.AnimatedSupportFragment;
-import com.jskierbi.commons.navigation.NavigationController;
+import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import javax.inject.Inject;
 
@@ -17,7 +17,7 @@ import javax.inject.Inject;
  */
 public class MainFragment extends AnimatedSupportFragment {
 
-	@Inject NavigationController mNavigationController;
+	@Inject FragmentNavigationController mFragmentNavigationController;
 
 	@Override public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.fragment_main, container, false);
@@ -28,6 +28,6 @@ public class MainFragment extends AnimatedSupportFragment {
 	@OnClick(R.id.btn_nav_details) void navDetailsClick() {
 		AnimatedSupportFragment fragment = new DetailFragment();
 		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
-		mNavigationController.navigateTo(fragment);
+		mFragmentNavigationController.navigateTo(fragment);
 	}
 }

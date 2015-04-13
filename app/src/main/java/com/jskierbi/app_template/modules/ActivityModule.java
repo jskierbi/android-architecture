@@ -2,11 +2,11 @@ package com.jskierbi.app_template.modules;
 
 import android.support.v4.app.FragmentManager;
 import com.jskierbi.app_template.base.BaseAppActivity;
-import com.jskierbi.app_template.ui.ActivityDrawerToolbar;
+import com.jskierbi.app_template.ui.ActivityWithDrawerToolbar;
 import com.jskierbi.app_template.ui.DetailFragment;
 import com.jskierbi.app_template.ui.DrawerFragment;
 import com.jskierbi.app_template.ui.MainFragment;
-import com.jskierbi.commons.navigation.NavigationController;
+import com.jskierbi.commons.navigation.FragmentNavigationController;
 import dagger.Module;
 import dagger.Provides;
 
@@ -17,7 +17,7 @@ import javax.inject.Singleton;
  */
 @Module(
 		injects = {
-				ActivityDrawerToolbar.class,
+				ActivityWithDrawerToolbar.class,
 
 				MainFragment.class,
 				DetailFragment.class,
@@ -38,7 +38,7 @@ public class ActivityModule {
 		return mActivity.getSupportFragmentManager();
 	}
 
-	@Provides @Singleton NavigationController provideNavService() {
-		return new NavigationController(mActivity);
+	@Provides @Singleton FragmentNavigationController provideNavService() {
+		return new FragmentNavigationController(mActivity);
 	}
 }

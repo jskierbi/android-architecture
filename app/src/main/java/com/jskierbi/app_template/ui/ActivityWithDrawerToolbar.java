@@ -2,57 +2,42 @@ package com.jskierbi.app_template.ui;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
 import butterknife.ButterKnife;
 import butterknife.InjectView;
 import com.jskierbi.app_template.R;
 import com.jskierbi.app_template.base.BaseAppActivity;
 import com.jskierbi.commons.dagger.ForApplication;
-import com.jskierbi.commons.navigation.NavServiceHostOLD;
-import com.jskierbi.commons.navigation.NavigationController;
-import com.jskierbi.commons.navigation.NavigationHost;
+import com.jskierbi.commons.navigation.FragmentNavigation;
+import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import javax.inject.Inject;
 
 /**
  * Created by jakub on 01/27/2015.
  */
-@NavigationHost(
+@FragmentNavigation(
 		fragmentContainerId = R.id.content,
 		toolbarId = R.id.toolbar,
-		defaultFragment = MainFragment.class
+		defaultFragmentClass = MainFragment.class
 //		primaryDrawerId = R.id.drawer_layout
 )
-public class ActivityDrawerToolbar extends BaseAppActivity implements NavServiceHostOLD {
+public class ActivityWithDrawerToolbar extends BaseAppActivity {
 
 //	@InjectView(R.id.content) FrameLayout mContent;
 	@InjectView(R.id.toolbar) Toolbar mToolbar;
 
 	@Inject @ForApplication Context mContext;
-	@Inject NavigationController mNavigationController;
+	@Inject FragmentNavigationController mFragmentNavigationController;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_drawer_toolbar);
+		setContentView(R.layout.activity_with_drawer_toolbar);
 		ButterKnife.inject(this);
 		setSupportActionBar(mToolbar);
 	}
 
-	@Override public Toolbar toolbar() {
-		return mToolbar;
-	}
-	@Override public int fragmentContainerId() {
-		return R.id.content;
-	}
-	@Override public Fragment defaultFragment() {
-		return new MainFragment();
-	}
-	@Override public int doubleBackToExit() {
-		return 0;
-	}
-
 	@Override public void onBackPressed() {
-		mNavigationController.onBackPressed();
+		mFragmentNavigationController.onBackPressed();
 	}
 }

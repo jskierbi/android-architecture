@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import com.jskierbi.app_template.R;
 import com.jskierbi.commons.navigation.AnimatedSupportFragment;
-import com.jskierbi.commons.navigation.NavigationController;
+import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import javax.inject.Inject;
 
@@ -21,7 +21,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 	private static final String TAG = DetailFragment.class.getSimpleName();
 	private static final String ARG_NO = "ARG_NO";
 
-	@Inject NavigationController mNavigationController;
+	@Inject FragmentNavigationController mFragmentNavigationController;
 
 	public DetailFragment() {
 		Bundle bundle = new Bundle();
@@ -44,7 +44,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mNavigationController.navigateTo(fragment, true);
+						mFragmentNavigationController.navigateTo(fragment, true);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -64,7 +64,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mNavigationController.navigateTo(fragment, false);
+						mFragmentNavigationController.navigateTo(fragment, false);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -79,7 +79,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 			btnClearBackstack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						mNavigationController.clearBackstack();
+						mFragmentNavigationController.clearBackstack();
 					} catch (Exception ex) {
 
 					}
@@ -94,7 +94,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 			btnBack.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					try {
-						mNavigationController.navigateBack();
+						mFragmentNavigationController.navigateBack();
 					} catch (Exception ex) {
 						Log.e(TAG, "Back button exception", ex);
 					}

@@ -13,10 +13,10 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface NavigationHost {
+public @interface FragmentNavigation {
 
 	@IdRes int fragmentContainerId();
-	Class defaultFragment();
+	Class defaultFragmentClass();
 
 	@IdRes int toolbarId() default 0;
 	boolean doubleBackToExitEnabled() default false;

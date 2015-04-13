@@ -29,7 +29,7 @@ import org.parceler.Parcels;
  *
  * Integration with Activity:
  * 1. annotate activity with @NavigationHost
- * 2. call {@link NavigationController#onBackPressed()} from {@link Activity#onBackPressed}
+ * 2. call {@link FragmentNavigationController#onBackPressed()} from {@link Activity#onBackPressed}
  */
 
 // TODOJS no toolbar
@@ -37,9 +37,9 @@ import org.parceler.Parcels;
 // TODOJS no drawer
 // TODOJS single drawer
 // TODOJS double drawer
-public class NavigationController {
+public class FragmentNavigationController {
 
-	private static final String TAG = NavigationController.class.getSimpleName();
+	private static final String TAG = FragmentNavigationController.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
 
@@ -50,7 +50,6 @@ public class NavigationController {
 	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
 	private ActionBarDrawerToggle mDrawerToggle;
 
-	//	private final NavServiceHostOLD mHost;
 	private final @IdRes int mContainerId;
 	private final Class mDefaultFragment;
 
@@ -73,24 +72,21 @@ public class NavigationController {
 	 * Creates navigation service that is hosted by activity.
 	 * There is headless fragment created and added via FragmentManger inside this constructor
 	 * to manage toolbar state (uses Fragments' lifecycle callbacks to save and restore state)
-	 *
-	 * @param activity to host this navigation service, have to extend
-	 *                 {@link ActionBarActivity} and implement {@link NavServiceHostOLD} interface.
 	 */
-	public NavigationController(FragmentActivity activity) {
+	public FragmentNavigationController(FragmentActivity activity) {
 
-		NavigationHost navigationHost = activity.getClass().getAnnotation(NavigationHost.class);
-		if (navigationHost == null) {
-			throw new IllegalArgumentException("Activity hosting NavService requires @NavigationHost annotation");
+		FragmentNavigation fragmentNavigation = activity.getClass().getAnnotation(FragmentNavigation.class);
+		if (fragmentNavigation == null) {
+			throw new IllegalArgumentException("Activity hosting NavService has to be annotated with @NavigationHost");
 		}
 
-		mContainerId = navigationHost.fragmentContainerId();
-		mToolbarId = navigationHost.toolbarId();
-		mFlgDoubleBackToExit = navigationHost.doubleBackToExitEnabled();
-		mDoubleBackToExitText = navigationHost.doubleBackToExitText();
-		mPrimaryDrawerId = navigationHost.primaryDrawerId();
-		mSecondaryDrawerId = navigationHost.secondaryDrawerId();
-		mDefaultFragment = navigationHost.defaultFragment();
+		mContainerId = fragmentNavigation.fragmentContainerId();
+		mToolbarId = fragmentNavigation.toolbarId();
+		mFlgDoubleBackToExit = fragmentNavigation.doubleBackToExitEnabled();
+		mDoubleBackToExitText = fragmentNavigation.doubleBackToExitText();
+		mPrimaryDrawerId = fragmentNavigation.primaryDrawerId();
+		mSecondaryDrawerId = fragmentNavigation.secondaryDrawerId();
+		mDefaultFragment = fragmentNavigation.defaultFragmentClass();
 
 		mActivity = activity;
 		mActionBarActivity = mActivity instanceof ActionBarActivity ?
