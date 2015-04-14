@@ -20,8 +20,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 import com.jskierbi.commons.R;
-import org.parceler.Parcel;
-import org.parceler.Parcels;
 
 /**
  * Base NavService class.
@@ -60,10 +58,11 @@ public class FragmentNavigationController {
 	private final @IdRes int mPrimaryDrawerId;
 	private final @IdRes int mSecondaryDrawerId;
 
-	// TODO remove parceler
-	private State mState = new State();
-	@Parcel public static class State {
 
+	private static final String STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS = "STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS";
+	private static final String STATE_KEY_FLG_NAV_UP_ENABLED = "STATE_KEY_FLG_NAV_UP_ENABLED";
+	private State mState = new State();
+	public static class State {
 		int mActionbarDisplayOptions;
 		boolean mFlgNavUpEnabled = false;
 	}
@@ -84,8 +83,8 @@ public class FragmentNavigationController {
 		mToolbarId = fragmentNavigation.toolbarId();
 		mFlgDoubleBackToExit = fragmentNavigation.doubleBackToExitEnabled();
 		mDoubleBackToExitText = fragmentNavigation.doubleBackToExitText();
-		mPrimaryDrawerId = fragmentNavigation.primaryDrawerId();
-		mSecondaryDrawerId = fragmentNavigation.secondaryDrawerId();
+		mPrimaryDrawerId = fragmentNavigation.primaryDrawerLayoutId();
+		mSecondaryDrawerId = fragmentNavigation.secondaryDrawerLayoutId();
 		mDefaultFragment = fragmentNavigation.defaultFragmentClass();
 
 		mActivity = activity;
@@ -111,7 +110,7 @@ public class FragmentNavigationController {
 
 	// TODO change parameter to base Fragment
 	// TODO support both android.app.Fragment and android.support.v4.app.Fragment
-	public void navigateTo(AnimatedSupportFragment fragment) {
+	public void navigateTo(android.support.v4.app.Fragment fragment) {
 		navigateTo(fragment, true);
 	}
 
@@ -128,33 +127,38 @@ public class FragmentNavigationController {
 	 * @param nextFragment to navigate to
 	 * @param flgAddToBackstack whether to add transaction to backstack or not.
 	 */
-	public void navigateTo(AnimatedSupportFragment nextFragment, boolean flgAddToBackstack) {
+	public void navigateTo(android.support.v4.app.Fragment nextFragment, boolean flgAddToBackstack) {
 
 		try {
 			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
+			AnimatedSupportFragment nextFragmentAnimated = nextFragment instanceof AnimatedSupportFragment ?
+					(AnimatedSupportFragment) nextFragment : null;
 			if (currentFragment instanceof AnimatedSupportFragment) {
 				// For current fragment, set animation that will be played when navigating back
 				// This is to enable defining animations on single fragment that will be respected by previous
 				// fragment in backstack
-				((AnimatedSupportFragment) currentFragment).setPopEnterAnim(nextFragment.getPopEnterAnim());
+				((AnimatedSupportFragment) currentFragment).setPopEnterAnim(
+						nextFragmentAnimated == null ? 0 : nextFragmentAnimated.getPopEnterAnim());
 			}
 
 			// Use case: exit via home, return to application. When popEnter animation set by fragment is used,
 			// each time user returns to app, animation will be played - this is wrong, no animation should be played.
 			// PopEnter animation will be set for nextFragment in next navigateTo call (nextFragment will become
 			// currentFragment in next navigateTo call)
-			nextFragment.setPopEnterAnim(0);
+			if (nextFragmentAnimated != null) {
+				nextFragmentAnimated.setPopEnterAnim(0);
+			}
 
 			FragmentTransaction transaction = mFragmentManager.beginTransaction();
 			// Disable animation Pre 4.0.
 			// Animation fixes in BaseNavFragment uses {@link Activity#isChangingConfigurations}, which is unavailable
 			// for pre 3.0
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && nextFragmentAnimated != null) {
 				transaction.setCustomAnimations(
-						nextFragment.getEnterAnim(),
-						nextFragment.getExitAnim(),
-						nextFragment.getPopEnterAnim(),
-						nextFragment.getPopExitAnim());
+						nextFragmentAnimated.getEnterAnim(),
+						nextFragmentAnimated.getExitAnim(),
+						nextFragmentAnimated.getPopEnterAnim(),
+						nextFragmentAnimated.getPopExitAnim());
 			}
 			transaction.replace(mContainerId, nextFragment);
 			if (flgAddToBackstack) {
@@ -268,8 +272,9 @@ public class FragmentNavigationController {
 
 		if (savedInstanceState != null) {
 			// Restore app state
-			State state = Parcels.unwrap(savedInstanceState.getParcelable(KEY_INSTANCE_STATE));
-			if (state != null) mState = state;
+			mState.mActionbarDisplayOptions = savedInstanceState.getInt(STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS);
+			mState.mFlgNavUpEnabled = savedInstanceState.getBoolean(STATE_KEY_FLG_NAV_UP_ENABLED);
+
 			if (mState.mActionbarDisplayOptions != 0 && mActionBarActivity.getSupportActionBar() != null) {
 				mActionBarActivity.getSupportActionBar().setDisplayOptions(mState.mActionbarDisplayOptions);
 			}
@@ -305,7 +310,8 @@ public class FragmentNavigationController {
 	void onSaveInstanceState(Bundle outState) {
 		if (mActionBarActivity.getSupportActionBar() != null) {
 			mState.mActionbarDisplayOptions = mActionBarActivity.getSupportActionBar().getDisplayOptions();
-			outState.putParcelable(KEY_INSTANCE_STATE, Parcels.wrap(mState));
+			outState.putInt(STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS, mState.mActionbarDisplayOptions);
+			outState.putBoolean(STATE_KEY_FLG_NAV_UP_ENABLED, mState.mFlgNavUpEnabled);
 		}
 	}
 

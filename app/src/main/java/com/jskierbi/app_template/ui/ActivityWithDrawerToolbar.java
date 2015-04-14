@@ -20,7 +20,7 @@ import javax.inject.Inject;
 		fragmentContainerId = R.id.content,
 		toolbarId = R.id.toolbar,
 		defaultFragmentClass = MainFragment.class
-//		primaryDrawerId = R.id.drawer_layout
+//		primaryDrawerLayoutId = R.id.drawer_layout
 )
 public class ActivityWithDrawerToolbar extends BaseAppActivity {
 

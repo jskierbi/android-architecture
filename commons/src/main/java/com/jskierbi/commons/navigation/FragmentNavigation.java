@@ -22,6 +22,6 @@ public @interface FragmentNavigation {
 	boolean doubleBackToExitEnabled() default false;
 	@StringRes int doubleBackToExitText() default 0;
 
-	@IdRes int primaryDrawerId() default 0;
-	@IdRes int secondaryDrawerId() default 0;
+	@IdRes int primaryDrawerLayoutId() default 0;
+	@IdRes int secondaryDrawerLayoutId() default 0;
 }
