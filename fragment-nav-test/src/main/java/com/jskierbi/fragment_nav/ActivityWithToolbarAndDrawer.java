@@ -10,7 +10,7 @@ import com.jskierbi.commons.navigation.FragmentNavigationController;
  * Created by jakub on 04/14/2015.
  */
 @FragmentNavigation(
-		defaultFragmentClass = DummyFragment.class,
+		defaultFragmentClass = StateSavingFragment.class,
 		fragmentContainerId = R.id.fragment_container,
 		primaryDrawerLayoutId = R.id.drawer_layout,
 		toolbarId =  R.id.toolbar,

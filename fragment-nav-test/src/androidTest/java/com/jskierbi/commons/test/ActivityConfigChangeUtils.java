@@ -1,4 +1,4 @@
-package com.jskierbi.fragment_nav;
+package com.jskierbi.commons.test;
 
 import android.app.Activity;
 import android.app.Instrumentation;

@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * Created by jakub on 04/14/2015.
  */
-public class DummyFragment extends Fragment {
+public class StateSavingFragment extends Fragment {
 
 	private final Map<String, String> mParameters = new HashMap<>();
 
