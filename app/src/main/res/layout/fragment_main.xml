@@ -12,6 +12,14 @@
     <Button
         android:id="@+id/btn_nav_details"
         android:text="To details"
+        android:layout_gravity="center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_nav_details_no_backstack"
+        android:text="To details (no backstack)"
+        android:layout_gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 

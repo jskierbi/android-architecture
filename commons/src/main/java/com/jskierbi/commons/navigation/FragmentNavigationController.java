@@ -37,6 +37,8 @@ import com.jskierbi.commons.R;
 // TODOJS double drawer
 public class FragmentNavigationController {
 
+	public enum Backstack { YES, NO }
+
 	private static final String TAG = FragmentNavigationController.class.getSimpleName();
 	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
 	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
@@ -111,7 +113,7 @@ public class FragmentNavigationController {
 	// TODO change parameter to base Fragment
 	// TODO support both android.app.Fragment and android.support.v4.app.Fragment
 	public void navigateTo(android.support.v4.app.Fragment fragment) {
-		navigateTo(fragment, true);
+		navigateTo(fragment, Backstack.YES);
 	}
 
 	/**
@@ -125,9 +127,9 @@ public class FragmentNavigationController {
 	 * fragment is de facto used for previous fragment. This enables to define fragment transitions on sigle fragment object.
 	 *
 	 * @param nextFragment to navigate to
-	 * @param flgAddToBackstack whether to add transaction to backstack or not.
+	 * @param addToBackstack whether to add transaction to backstack or not.
 	 */
-	public void navigateTo(android.support.v4.app.Fragment nextFragment, boolean flgAddToBackstack) {
+	public void navigateTo(android.support.v4.app.Fragment nextFragment, Backstack addToBackstack) {
 
 		try {
 			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
@@ -161,12 +163,12 @@ public class FragmentNavigationController {
 						nextFragmentAnimated.getPopExitAnim());
 			}
 			transaction.replace(mContainerId, nextFragment);
-			if (flgAddToBackstack) {
+			if (addToBackstack == Backstack.YES) {
 				transaction.addToBackStack(null);
 			}
 			transaction.commit();
 
-			final boolean isNavUpEnabled = flgAddToBackstack || mFragmentManager.getBackStackEntryCount() > 0;
+			final boolean isNavUpEnabled = addToBackstack == Backstack.YES || mFragmentManager.getBackStackEntryCount() > 0;
 			updateHomeAsUpState(isNavUpEnabled);
 
 		} catch (Exception ex) {

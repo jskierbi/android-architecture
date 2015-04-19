@@ -30,4 +30,10 @@ public class MainFragment extends AnimatedSupportFragment {
 		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
 		mFragmentNavigationController.navigateTo(fragment);
 	}
+
+	@OnClick(R.id.btn_nav_details_no_backstack) void navDetailsNoBackstackClick() {
+		AnimatedSupportFragment fragment = new DetailFragment();
+		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
+		mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.NO);
+	}
 }

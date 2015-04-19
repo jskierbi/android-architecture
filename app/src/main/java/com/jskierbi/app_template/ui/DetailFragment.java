@@ -44,7 +44,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mFragmentNavigationController.navigateTo(fragment, true);
+						mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.YES);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -64,7 +64,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mFragmentNavigationController.navigateTo(fragment, false);
+						mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.NO);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
