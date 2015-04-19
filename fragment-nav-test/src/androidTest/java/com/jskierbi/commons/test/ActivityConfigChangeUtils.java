@@ -26,12 +26,6 @@ import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
  */
 public class ActivityConfigChangeUtils {
 
-	public enum Orientation {
-		LANDSCAPE,
-		PORTRAIT,
-		CHANGE
-	}
-
 	public static Activity getCurrentActivity(Instrumentation instrumentation) {
 		final List<Activity> activities = new ArrayList<>();
 		instrumentation.runOnMainSync(new Runnable() {
@@ -43,19 +37,21 @@ public class ActivityConfigChangeUtils {
 
 		return Iterables.getFirst(activities, null);
 	}
-
 	public static ViewAction orientationLandscape() {
 		return new ChangeOrientationAction(Orientation.LANDSCAPE);
 	}
-
 	public static ViewAction orientationPortrait() {
 		return new ChangeOrientationAction(Orientation.PORTRAIT);
 	}
-
 	public static ViewAction orientationChange() {
 		return new ChangeOrientationAction(Orientation.CHANGE);
 	}
 
+	public enum Orientation {
+		LANDSCAPE,
+		PORTRAIT,
+		CHANGE
+	}
 	private static class ChangeOrientationAction implements ViewAction {
 
 		private static final String TAG = ActivityConfigChangeUtils.class.getSimpleName();
@@ -82,7 +78,11 @@ public class ActivityConfigChangeUtils {
 			final Activity activity = (Activity) view.getContext();
 
 			// Figure out target orientation
-			final int currentOrientation = activity.getResources().getConfiguration().orientation;
+			// If configuration orientation is SCREEN_ORIENTATION_USER, then read requestedOrientation
+			final int currentOrientation =
+					activity.getResources().getConfiguration().orientation == ActivityInfo.SCREEN_ORIENTATION_USER ?
+							activity.getRequestedOrientation() :
+							activity.getResources().getConfiguration().orientation;
 			int targetOrientation;
 			switch (mOrientation) {
 			case CHANGE:

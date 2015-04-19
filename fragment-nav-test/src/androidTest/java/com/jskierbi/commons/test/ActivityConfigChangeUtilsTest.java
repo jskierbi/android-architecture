@@ -47,4 +47,37 @@ public class ActivityConfigChangeUtilsTest extends ActivityInstrumentationTestCa
 		assertNotSame("Activities are different after recreation", beforeOrientationChange, getActivity());
 		assertEquals("Parameters are equal after activity recreation", value, getActivity().getStateParameter(key));
 	}
+
+	public void testMultipleOrientationChange() {
+
+		final String KEY1 = "KEY1";
+		final String VALUE1 = UUID.randomUUID().toString();
+
+		final StateSavingActivity firstIncarnation = getActivity();
+		firstIncarnation.setStateParameter(KEY1, VALUE1);
+
+		// First orientation change
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		final StateSavingActivity secondIncarnation = getActivity();
+		assertNotSame("Activity is recreated", firstIncarnation, secondIncarnation);
+		assertEquals("Activity state is restored", VALUE1, secondIncarnation.getStateParameter(KEY1));
+
+		// Second orientation change
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		final StateSavingActivity thirdIncarnation = getActivity();
+		assertNotSame("Activity is recreated", secondIncarnation, thirdIncarnation);
+		assertEquals("Activity state is restored", VALUE1, thirdIncarnation.getStateParameter(KEY1));
+
+		// Third orientation change
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		final StateSavingActivity fourthIncarnation = getActivity();
+		assertNotSame("Activity is recreated", thirdIncarnation, fourthIncarnation);
+		assertEquals("Activity state is restored", VALUE1, fourthIncarnation.getStateParameter(KEY1));
+	}
 }
