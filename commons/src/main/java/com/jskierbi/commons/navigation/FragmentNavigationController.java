@@ -289,8 +289,10 @@ public class FragmentNavigationController {
 			}
 		}
 
+		// Add default fragment
 		if (mFragmentManager.findFragmentById(mContainerId) == null) {
 			try {
+				Log.d(TAG, "## Add default fragment!!!");
 				Fragment fragment = (Fragment) mDefaultFragment.newInstance();
 				mFragmentManager.beginTransaction()
 						.add(mContainerId, fragment)

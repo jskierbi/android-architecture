@@ -5,7 +5,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.jskierbi.fragmentnavigationsample"
+        applicationId "com.jskierbi.fragment_nav_test"
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1

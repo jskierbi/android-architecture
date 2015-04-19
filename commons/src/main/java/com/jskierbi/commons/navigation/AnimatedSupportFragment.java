@@ -12,6 +12,13 @@ import com.jskierbi.commons.dagger.fragment.DaggerFragment;
  * Contains code to fix loosing fragment transaction animation after screen rotation
  * To be used with {@link FragmentNavigationController}
  */
+
+// TODO check transition support!!!
+// android.support.v4.app.Fragment.setEnterTransition()
+// android.support.v4.app.Fragment.setExitTransition()
+// android.support.v4.app.Fragment.setReenterTransition()
+// android.support.v4.app.Fragment.setReturnTransition()
+
 public abstract class AnimatedSupportFragment extends DaggerFragment {
 
 	private static final String STATE_ENTER_ANIM = "STATE_ENTER_ANIM";
