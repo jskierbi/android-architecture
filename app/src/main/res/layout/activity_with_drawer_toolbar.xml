@@ -29,6 +29,13 @@
             android:layout_height="match_parent"
             android:layout_gravity="left" />
 
+        <fragment
+            android:id="@+id/navdrawer_fragment_2"
+            android:name="com.jskierbi.app_template.ui.DrawerFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="right" />
+
     </android.support.v4.widget.DrawerLayout>
 
 </LinearLayout>

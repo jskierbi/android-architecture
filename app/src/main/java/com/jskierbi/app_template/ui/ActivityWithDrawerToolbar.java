@@ -19,8 +19,8 @@ import javax.inject.Inject;
 @FragmentNavigation(
 		fragmentContainerId = R.id.content,
 		toolbarId = R.id.toolbar,
-		defaultFragmentClass = MainFragment.class
-//		primaryDrawerLayoutId = R.id.drawer_layout
+		defaultFragmentClass = MainFragment.class,
+		drawerLayoutId = R.id.drawer_layout
 )
 public class ActivityWithDrawerToolbar extends BaseAppActivity {
 

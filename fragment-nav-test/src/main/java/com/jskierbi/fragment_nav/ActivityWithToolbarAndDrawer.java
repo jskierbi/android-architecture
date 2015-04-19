@@ -12,7 +12,7 @@ import com.jskierbi.commons.navigation.FragmentNavigationController;
 @FragmentNavigation(
 		defaultFragmentClass = StateSavingFragment.class,
 		fragmentContainerId = R.id.fragment_container,
-		primaryDrawerLayoutId = R.id.drawer_layout,
+		drawerLayoutId = R.id.drawer_layout,
 		toolbarId =  R.id.toolbar,
 		doubleBackToExitEnabled = true
 )
