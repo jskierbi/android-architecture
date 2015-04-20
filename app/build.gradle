@@ -16,7 +16,7 @@ android {
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.jskierbi.notificationdemo"
+        applicationId "com.jskierbi.architecture_demo"
         minSdkVersion 9
         targetSdkVersion 21
         versionCode 1

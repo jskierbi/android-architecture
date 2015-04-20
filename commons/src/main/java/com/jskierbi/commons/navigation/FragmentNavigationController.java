@@ -312,6 +312,7 @@ public class FragmentNavigationController {
 			return false;
 		}
 	}
+
 	private void updateHomeAsUpState(boolean flgNavBackEnabled) {
 		final ActionBar actionBar = mActionBarActivity.getSupportActionBar();
 		mState.mFlgNavUpEnabled = flgNavBackEnabled;

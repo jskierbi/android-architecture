@@ -254,6 +254,74 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 
 	public void testNavigateClearBackstack() {
 
+		final String KEY = "VALUE_KEY";
+		final String VALUE1 = "VALUE_1";
+		final String VALUE2 = "VALUE_2";
+		final String VALUE3 = "VALUE_3";
+
+		FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+
+		{   // Set fragment parameter to be saved and then restored
+			StateSavingFragment fragment = (StateSavingFragment) getActivity()
+					.getSupportFragmentManager()
+					.findFragmentById(fragmentNavigationAnnotation.fragmentContainerId());
+			assertNotNull("Default fragment is properly added by ", fragment);
+			// Set some parameters to be restored on fragment after orientation change
+			fragment.setStateParameter(KEY, VALUE1);
+		}
+
+		// Navigate to fragment
+		final StateSavingFragment secondFragment = new StateSavingFragment();
+		final StateSavingFragment thirdFragment = new StateSavingFragment();
+		final StateSavingFragment fourthFragment = new StateSavingFragment();
+		final StateSavingFragment fifthFragment = new StateSavingFragment();
+		secondFragment.setStateParameter(KEY, VALUE2);
+		fifthFragment.setStateParameter(KEY, VALUE3);
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().getFragmentNavigationController().navigateTo(secondFragment, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(thirdFragment);
+				getActivity().getFragmentNavigationController().navigateTo(fourthFragment, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(fifthFragment);
+				getActivity().getSupportFragmentManager().executePendingTransactions();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertEquals("Previous fragment added to backstack", 2, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+		assertSame("Navigated to proper fragment",
+				fifthFragment,
+				getActivity().getSupportFragmentManager().findFragmentById(fragmentNavigationAnnotation.fragmentContainerId()));
+
+		// Change orientation
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		// Check if fragment is properly restored
+		assertEquals("Previous fragment added to backstack", 2, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+		{
+			StateSavingFragment fragment = (StateSavingFragment) getActivity()
+					.getSupportFragmentManager()
+					.findFragmentById(fragmentNavigationAnnotation.fragmentContainerId());
+			assertNotNull("Navigated back to original fragment", fragment);
+			assertEquals("Original fragment sstate restored properly", VALUE3, fragment.getStateParameter(KEY));
+		}
+
+		// Clear backstack!!!
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().getFragmentNavigationController().clearBackstack();
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertEquals("Previous fragment popped from backstack", 0, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+		{
+			StateSavingFragment fragment = (StateSavingFragment) getActivity()
+					.getSupportFragmentManager()
+					.findFragmentById(fragmentNavigationAnnotation.fragmentContainerId());
+			assertNotNull("Navigated back to original fragment", fragment);
+			assertEquals("Original fragment sstate restored properly", VALUE2, fragment.getStateParameter(KEY));
+		}
 	}
 
 	public void testNavDrawerToolbarIntegration() {
