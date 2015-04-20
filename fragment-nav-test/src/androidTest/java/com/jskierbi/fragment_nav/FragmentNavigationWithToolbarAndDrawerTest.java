@@ -220,38 +220,6 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		}
 	}
 
-	public void testNavigationDrawer() {
-		// @see testing navigation drawer:
-		//      https://groups.google.com/forum/#!topic/android-test-kit-discuss/bmLQUlcI5U4
-		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
-		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
-		assertTrue("Drawer layout defined in @FragmentNavigation", 0 != fragmentNavigationAnnotation.drawerLayoutId());
-
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.check(matches(not(isDrawerVisible(GravityCompat.START))))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))))
-				.perform(openDrawer(GravityCompat.START))
-				.check(matches(isDrawerVisible(GravityCompat.START)))
-				.check(matches(isDrawerOpen(GravityCompat.START)));
-
-		onView(isRoot()).perform(orientationChange());
-		setActivity(getCurrentActivity(getInstrumentation()));
-
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.check(matches(isDrawerVisible(GravityCompat.START)))
-				.check(matches(isDrawerOpen(GravityCompat.START)))
-				.perform(closeDrawer(GravityCompat.START))
-				.check(matches(not(isDrawerVisible(GravityCompat.START))))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))));
-
-		onView(isRoot()).perform(orientationChange());
-		setActivity(getCurrentActivity(getInstrumentation()));
-
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.check(matches(not(isDrawerVisible(GravityCompat.START))))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))));
-	}
-
 	public void testNavigateClearBackstack() {
 
 		final String KEY = "VALUE_KEY";
@@ -324,6 +292,42 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		}
 	}
 
+	public void testNavigationDrawer() {
+		// @see testing navigation drawer:
+		//      https://groups.google.com/forum/#!topic/android-test-kit-discuss/bmLQUlcI5U4
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+		assertTrue("Drawer layout defined in @FragmentNavigation", 0 != fragmentNavigationAnnotation.drawerLayoutId());
+
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(not(isDrawerVisible(GravityCompat.START))))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))))
+				.perform(openDrawer(GravityCompat.START))
+				.check(matches(isDrawerVisible(GravityCompat.START)))
+				.check(matches(isDrawerOpen(GravityCompat.START)));
+
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(isDrawerVisible(GravityCompat.START)))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerVisible(GravityCompat.START))))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(not(isDrawerVisible(GravityCompat.START))))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+	}
+
+	public void testBackActionToolbarIntegration() {
+		// Back action performed by clicking open_drawer/close_drawer respectively
+	}
+
 	public void testNavDrawerToolbarIntegration() {
 
 		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
@@ -347,7 +351,23 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 				.check(matches(not(isDrawerOpen(GravityCompat.START))));
 	}
 
-	public void testNavDrawerToolbarNavigationIntegration() {
+	public void testNavDrawerRightToolbarIntegration() {
 
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+		assertTrue("Drawer layout defined in @FragmentNavigation", 0 != fragmentNavigationAnnotation.drawerLayoutId());
+
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.perform(openDrawer(GravityCompat.END))
+				.check(matches(isDrawerOpen(GravityCompat.END)))
+				.check(matches(isDrawerVisible(GravityCompat.END)));
+
+		// Try close END drawer with toolbar action
+		onView(withContentDescription(getActivity().getString(R.string.close_drawer)))
+				.perform(click());
+
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(not(isDrawerOpen(GravityCompat.END))))
+				.check(matches(not(isDrawerVisible(GravityCompat.END))));
 	}
 }
