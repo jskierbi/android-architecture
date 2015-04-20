@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -228,25 +229,47 @@ public class FragmentNavigationController {
 
 		{   // Initialize drawer toggle, if DrawerLayout available
 			View activityRootView = mActivity.findViewById(android.R.id.content);
-//			DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
-			DrawerLayout drawerLayout = (DrawerLayout) mActivity.findViewById(mDrawerLayoutId);
+			final DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
 			if (drawerLayout != null) {
+				final Toolbar toolbar = (Toolbar) mActivity.findViewById(mToolbarId);
+				// Handle toolbar home clicks here
+				final View.OnClickListener toolbarNavListener = new View.OnClickListener() {
+					@Override public void onClick(View v) {
+						if (mDrawerToggle.isDrawerIndicatorEnabled()) {
+							if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+								drawerLayout.closeDrawer(GravityCompat.START);
+							} else if (drawerLayout.isDrawerOpen(GravityCompat.END)) {
+								drawerLayout.closeDrawer(GravityCompat.END);
+							} else {
+								drawerLayout.openDrawer(GravityCompat.START);
+							}
+						} else {
+							navigateBack();
+						}
+					}
+				};
 				Log.d(TAG, "Drawer Toggle: ENABLED!");
 				mDrawerToggle = new ActionBarDrawerToggle(
 						mActivity,
 						drawerLayout,
-						(Toolbar) mActivity.findViewById(mToolbarId), // TODOJS fix this when no toolbar available!!!
+						toolbar, // TODOJS fix this when no toolbar available!!!
 						R.string.open_drawer,
-						R.string.close_drawer);
+						R.string.close_drawer) {
+
+					// Handle onOptionsItemSelected here
+					@Override public boolean onOptionsItemSelected(MenuItem item) {
+						if (item != null && item.getItemId() == android.R.id.home) {
+							toolbarNavListener.onClick(drawerLayout);
+							return true;
+						}
+						return false;
+					}
+				};
 				drawerLayout.setDrawerListener(mDrawerToggle);
 				// workaround https://stackoverflow.com/questions/26549008/missing-up-navigation-icon-after-switching-from-ics-actionbar-to-lollipop-toolba/26932351#26932351}
 				mDrawerToggle.setHomeAsUpIndicator(mActionBarActivity.getV7DrawerToggleDelegate().getThemeUpIndicator());
 				// workaround http://stackoverflow.com/questions/26582075/cannot-catch-toolbar-home-button-click-event
-				mDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-					@Override public void onClick(View v) {
-						navigateBack();
-					}
-				});
+				toolbar.setNavigationOnClickListener(toolbarNavListener);
 			} else {
 				Log.d(TAG, "Drawer Toggle: DISABLED!");
 				mDrawerToggle = null;
