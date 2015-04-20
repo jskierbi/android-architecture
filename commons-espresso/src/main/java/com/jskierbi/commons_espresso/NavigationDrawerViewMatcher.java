@@ -1,4 +1,4 @@
-package com.jskierbi.commons.test;
+package com.jskierbi.commons_espresso;
 
 import android.support.v4.widget.DrawerLayout;
 import android.view.View;

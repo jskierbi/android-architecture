@@ -1,4 +1,4 @@
-package com.jskierbi.commons.test;
+package com.jskierbi.commons_espresso;
 
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;

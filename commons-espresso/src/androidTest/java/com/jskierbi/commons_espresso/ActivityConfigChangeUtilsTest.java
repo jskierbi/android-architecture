@@ -1,15 +1,15 @@
-package com.jskierbi.commons.test;
+package com.jskierbi.commons_espresso;
 
 import android.app.Activity;
 import android.test.ActivityInstrumentationTestCase2;
-import com.jskierbi.fragment_nav.StateSavingActivity;
+import com.jskierbi.commons_espresso.ui.StateSavingActivity;
 
 import java.util.UUID;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static com.jskierbi.commons.test.ActivityConfigChangeUtils.getCurrentActivity;
-import static com.jskierbi.commons.test.ActivityConfigChangeUtils.orientationChange;
+import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.getCurrentActivity;
+import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.orientationChange;
 
 /**
  * Created by jakub on 04/19/2015.

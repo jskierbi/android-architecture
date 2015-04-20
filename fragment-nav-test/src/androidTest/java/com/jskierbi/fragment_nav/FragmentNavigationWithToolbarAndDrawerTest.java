@@ -8,15 +8,15 @@ import com.jskierbi.commons.navigation.FragmentNavigationController;
 import java.util.UUID;
 
 import static android.support.test.espresso.Espresso.onView;
+import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
-import static android.support.test.espresso.matcher.ViewMatchers.isRoot;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static com.jskierbi.commons.test.ActivityConfigChangeUtils.getCurrentActivity;
-import static com.jskierbi.commons.test.ActivityConfigChangeUtils.orientationChange;
-import static com.jskierbi.commons.test.NavigationDrawerViewActions.closeDrawer;
-import static com.jskierbi.commons.test.NavigationDrawerViewActions.openDrawer;
-import static com.jskierbi.commons.test.NavigationDrawerViewMatcher.isDrawerOpen;
-import static com.jskierbi.commons.test.NavigationDrawerViewMatcher.isDrawerVisible;
+import static android.support.test.espresso.matcher.ViewMatchers.*;
+import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.getCurrentActivity;
+import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.orientationChange;
+import static com.jskierbi.commons_espresso.NavigationDrawerViewActions.closeDrawer;
+import static com.jskierbi.commons_espresso.NavigationDrawerViewActions.openDrawer;
+import static com.jskierbi.commons_espresso.NavigationDrawerViewMatcher.isDrawerOpen;
+import static com.jskierbi.commons_espresso.NavigationDrawerViewMatcher.isDrawerVisible;
 import static org.hamcrest.Matchers.not;
 
 
@@ -221,14 +221,11 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 	}
 
 	public void testNavigationDrawer() {
-
 		// @see testing navigation drawer:
 		//      https://groups.google.com/forum/#!topic/android-test-kit-discuss/bmLQUlcI5U4
-
 		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
 		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
-
-		assertFalse("Drawer layout defined in @FragmentNavigation", 0 == fragmentNavigationAnnotation.drawerLayoutId());
+		assertTrue("Drawer layout defined in @FragmentNavigation", 0 != fragmentNavigationAnnotation.drawerLayoutId());
 
 		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
 				.check(matches(not(isDrawerVisible(GravityCompat.START))))
@@ -253,5 +250,36 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
 				.check(matches(not(isDrawerVisible(GravityCompat.START))))
 				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+	}
+
+	public void testNavigateClearBackstack() {
+
+	}
+
+	public void testNavDrawerToolbarIntegration() {
+
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+		assertTrue("Drawer layout defined in @FragmentNavigation", 0 != fragmentNavigationAnnotation.drawerLayoutId());
+
+		// Open drawer via toggle
+		onView(withContentDescription(getActivity().getString(R.string.open_drawer)))
+				.perform(click());
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(isDrawerOpen(GravityCompat.START)));
+
+		// Change orientation
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		// Close drawer via toggle
+		onView(withContentDescription(getActivity().getString(R.string.close_drawer)))
+				.perform(click());
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+	}
+
+	public void testNavDrawerToolbarNavigationIntegration() {
+
 	}
 }

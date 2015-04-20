@@ -1,4 +1,4 @@
-package com.jskierbi.commons.test;
+package com.jskierbi.commons_espresso;
 
 import android.app.Activity;
 import android.app.Instrumentation;

@@ -1,16 +1,14 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 22
     buildToolsVersion "21.1.2"
 
     defaultConfig {
-        applicationId "com.jskierbi.fragment_nav_test"
         minSdkVersion 9
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -25,14 +23,11 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:22.0.0'
-    compile 'com.android.support:appcompat-v7:22.0.0'
+    provided 'com.android.support:appcompat-v7:22.0.0'
 
-    compile project(':commons')
+    provided 'com.android.support.test.espresso:espresso-core:2.0'
+    provided 'com.android.support.test:testing-support-lib:0.1'
 
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.0'
     androidTestCompile 'com.android.support.test:testing-support-lib:0.1'
-    androidTestCompile project(':commons-espresso')
-    // androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.0'
 }
