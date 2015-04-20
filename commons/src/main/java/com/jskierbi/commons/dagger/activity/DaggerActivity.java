@@ -16,11 +16,13 @@ public class DaggerActivity extends Activity implements Injector {
 	private ObjectGraph mObjectGraph;
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
 		// Application graph plus activity modules, then inject
+		// Create graph before super.onCreate()!!!
 		Injector appInjector = (Injector) getApplication();
 		mObjectGraph = appInjector.getObjectGraph().plus(listModules().toArray());
+
+		super.onCreate(savedInstanceState);
+		// Call inject after super.onCreate()!!!
 		mObjectGraph.inject(this);
 	}
 
