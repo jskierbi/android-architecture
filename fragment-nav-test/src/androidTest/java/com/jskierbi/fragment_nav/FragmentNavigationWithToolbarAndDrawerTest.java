@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.support.test.espresso.Espresso;
 import android.support.v4.view.GravityCompat;
 import android.test.ActivityInstrumentationTestCase2;
+import com.jskierbi.commons.navigation.BackstackAdd;
 import com.jskierbi.commons.navigation.FragmentNavigation;
-import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import java.util.UUID;
 
@@ -166,7 +166,7 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		fragment1.setStateParameter(KEY, VALUE1);
 		getInstrumentation().runOnMainSync(new Runnable() {
 			@Override public void run() {
-				getActivity().getFragmentNavigationController().navigateTo(fragment1, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(fragment1, BackstackAdd.NO);
 			}
 		});
 		getInstrumentation().waitForIdleSync();
@@ -176,7 +176,7 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		fragment2.setStateParameter(KEY, VALUE2);
 		getInstrumentation().runOnMainSync(new Runnable() {
 			@Override public void run() {
-				getActivity().getFragmentNavigationController().navigateTo(fragment2, FragmentNavigationController.Backstack.YES);
+				getActivity().getFragmentNavigationController().navigateTo(fragment2, BackstackAdd.YES);
 			}
 		});
 		getInstrumentation().waitForIdleSync();
@@ -190,7 +190,7 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		fragment3.setStateParameter(KEY, VALUE3);
 		getInstrumentation().runOnMainSync(new Runnable() {
 			@Override public void run() {
-				getActivity().getFragmentNavigationController().navigateTo(fragment3, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(fragment3, BackstackAdd.NO);
 			}
 		});
 		getInstrumentation().waitForIdleSync();
@@ -253,9 +253,9 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		fifthFragment.setStateParameter(KEY, VALUE3);
 		getInstrumentation().runOnMainSync(new Runnable() {
 			@Override public void run() {
-				getActivity().getFragmentNavigationController().navigateTo(secondFragment, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(secondFragment, BackstackAdd.NO);
 				getActivity().getFragmentNavigationController().navigateTo(thirdFragment);
-				getActivity().getFragmentNavigationController().navigateTo(fourthFragment, FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(fourthFragment, BackstackAdd.NO);
 				getActivity().getFragmentNavigationController().navigateTo(fifthFragment);
 				getActivity().getSupportFragmentManager().executePendingTransactions();
 			}
@@ -364,7 +364,7 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 
 		getInstrumentation().runOnMainSync(new Runnable() {
 			@Override public void run() {
-				getActivity().getFragmentNavigationController().navigateTo(new StateSavingFragment(), FragmentNavigationController.Backstack.NO);
+				getActivity().getFragmentNavigationController().navigateTo(new StateSavingFragment(), BackstackAdd.NO);
 			}
 		});
 		getInstrumentation().waitForIdleSync();
@@ -532,5 +532,44 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		onView(withText(fragmentNavigationAnnotation.doubleBackToExitWithText()))
 				.inRoot(withDecorView(not(getActivity().getWindow().getDecorView())))
 				.check(matches(isDisplayed()));
+	}
+
+	public void testDraerOptionsEnableAlwaysToggleOnRoot() {
+
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+
+		// Drawer opens
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.perform(openDrawer(GravityCompat.START))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+		// Navigate to fragment
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				StateSavingFragment fragment = new StateSavingFragment();
+				getActivity().getFragmentNavigationController().navigateTo(fragment);
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+
+		// Drawer opens
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.perform(openDrawer(GravityCompat.START))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		// Drawer opens
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.perform(openDrawer(GravityCompat.START))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
 	}
 }

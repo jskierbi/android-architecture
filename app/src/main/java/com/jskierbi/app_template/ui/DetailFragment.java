@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import com.jskierbi.app_template.R;
 import com.jskierbi.commons.navigation.AnimatedSupportFragment;
+import com.jskierbi.commons.navigation.BackstackAdd;
 import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import javax.inject.Inject;
@@ -44,7 +45,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.YES);
+						mFragmentNavigationController.navigateTo(fragment, BackstackAdd.YES);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}
@@ -64,7 +65,7 @@ public class DetailFragment extends AnimatedSupportFragment {
 						Bundle bundle = new Bundle();
 						bundle.putInt(ARG_NO, getArguments().getInt(ARG_NO, 0) + 1);
 						fragment.setArguments(bundle);
-						mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.NO);
+						mFragmentNavigationController.navigateTo(fragment, BackstackAdd.NO);
 					} catch (Exception ex) {
 						Log.e(TAG, "Nav button exception", ex);
 					}

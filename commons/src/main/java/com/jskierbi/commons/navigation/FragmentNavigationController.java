@@ -36,24 +36,31 @@ import com.jskierbi.commons.R;
 // TODOJS no drawer
 public class FragmentNavigationController {
 
-	private static final String TAG = FragmentNavigationController.class.getSimpleName();
-	private static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
-	private static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
-	private static final String STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS = "STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS";
-	private static final String STATE_KEY_FLG_NAV_UP_ENABLED = "STATE_KEY_FLG_NAV_UP_ENABLED";
-	private final FragmentManager mFragmentManager;
-	private final FragmentActivity mActivity;
-	private final ActionBarActivity mActionBarActivity;
-	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
+	protected static final String TAG = FragmentNavigationController.class.getSimpleName();
+	protected static final String TAG_HOST_INTEGRATION_FRAGMENT = TAG + "_TAG_HOST_INTEGRATION_FRAGMENT";
+	protected static final String KEY_INSTANCE_STATE = TAG + "_INSTANCE_STATE";
+	protected static final String STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS = "STATE_KEY_ACTIONBAR_DISPLAY_OPTIONS";
+	protected static final String STATE_KEY_FLG_NAV_UP_ENABLED = "STATE_KEY_FLG_NAV_UP_ENABLED";
+	protected final FragmentManager mFragmentManager;
+	protected final FragmentActivity mActivity;
+	protected final ActionBarActivity mActionBarActivity;
+	protected final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
 
-	private final @IdRes int mContainerId;
-	private final Class mDefaultFragment;
-	private final @StringRes int mDoubleBackToExitWithText;
-	private final @IdRes int mToolbarId;
-	private final @IdRes int mDrawerLayoutId;
+	protected final @IdRes int mContainerId;
+	protected final Class mDefaultFragment;
+	protected final @StringRes int mDoubleBackToExitWithText;
+	protected final @IdRes int mToolbarId;
+	protected final @IdRes int mDrawerLayoutId;
 
-	private ActionBarDrawerToggle mDrawerToggle;
-	private State mState = new State();
+	protected ActionBarDrawerToggle mDrawerToggle;
+	protected State mState = new State();
+
+	protected static class State {
+
+		int mActionbarDisplayOptions;
+		boolean mFlgNavUpEnabled = false;
+	}
+
 	/**
 	 * Creates navigation service that is hosted by activity.
 	 * There is headless fragment created and added via FragmentManger inside this constructor
@@ -95,7 +102,7 @@ public class FragmentNavigationController {
 	// TODO change parameter to base Fragment
 	// TODO support both android.app.Fragment and android.support.v4.app.Fragment
 	public void navigateTo(android.support.v4.app.Fragment fragment) {
-		navigateTo(fragment, Backstack.YES);
+		navigateTo(fragment, BackstackAdd.YES);
 	}
 	/**
 	 * Base navigation method. Adds proper support for transition animations.
@@ -110,7 +117,7 @@ public class FragmentNavigationController {
 	 * @param nextFragment to navigate to
 	 * @param addToBackstack whether to add transaction to backstack or not.
 	 */
-	public void navigateTo(android.support.v4.app.Fragment nextFragment, Backstack addToBackstack) {
+	public void navigateTo(android.support.v4.app.Fragment nextFragment, BackstackAdd addToBackstack) {
 
 		try {
 			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
@@ -144,12 +151,12 @@ public class FragmentNavigationController {
 						nextFragmentAnimated.getPopExitAnim());
 			}
 			transaction.replace(mContainerId, nextFragment);
-			if (addToBackstack == Backstack.YES) {
+			if (addToBackstack == BackstackAdd.YES) {
 				transaction.addToBackStack(null);
 			}
 			transaction.commit();
 
-			final boolean isNavUpEnabled = addToBackstack == Backstack.YES || mFragmentManager.getBackStackEntryCount() > 0;
+			final boolean isNavUpEnabled = addToBackstack == BackstackAdd.YES || mFragmentManager.getBackStackEntryCount() > 0;
 			updateHomeAsUpState(isNavUpEnabled);
 
 		} catch (Exception ex) {
@@ -300,10 +307,10 @@ public class FragmentNavigationController {
 				mFragmentManager.beginTransaction()
 						.add(mContainerId, fragment)
 						.commit();
-			} catch (InstantiationException ex) {
-				Log.e(TAG, "Cannot instantinate default fragment", ex);
-			} catch (IllegalAccessException ex) {
-				Log.e(TAG, "Cannot instantinate default fragment", ex);
+			} catch (InstantiationException e) {
+				Log.e(TAG, "Cannot instantinate default fragment", e);
+			} catch (IllegalAccessException e) {
+				Log.e(TAG, "Cannot instantinate default fragment", e);
 			}
 		}
 	}
@@ -333,7 +340,7 @@ public class FragmentNavigationController {
 		}
 	}
 
-	private void updateHomeAsUpState(boolean flgNavBackEnabled) {
+	protected void updateHomeAsUpState(boolean flgNavBackEnabled) {
 		final ActionBar actionBar = mActionBarActivity.getSupportActionBar();
 		mState.mFlgNavUpEnabled = flgNavBackEnabled;
 
@@ -344,12 +351,5 @@ public class FragmentNavigationController {
 			mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
 			mDrawerToggle.syncState();
 		}
-	}
-
-	public enum Backstack {YES, NO}
-	public static class State {
-
-		int mActionbarDisplayOptions;
-		boolean mFlgNavUpEnabled = false;
 	}
 }

@@ -8,6 +8,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import com.jskierbi.app_template.R;
 import com.jskierbi.commons.navigation.AnimatedSupportFragment;
+import com.jskierbi.commons.navigation.BackstackAdd;
 import com.jskierbi.commons.navigation.FragmentNavigationController;
 
 import javax.inject.Inject;
@@ -34,6 +35,6 @@ public class MainFragment extends AnimatedSupportFragment {
 	@OnClick(R.id.btn_nav_details_no_backstack) void navDetailsNoBackstackClick() {
 		AnimatedSupportFragment fragment = new DetailFragment();
 		fragment.setCustomAnimations(R.anim.from_right, R.anim.to_left, R.anim.from_left, R.anim.to_right);
-		mFragmentNavigationController.navigateTo(fragment, FragmentNavigationController.Backstack.NO);
+		mFragmentNavigationController.navigateTo(fragment, BackstackAdd.NO);
 	}
 }
