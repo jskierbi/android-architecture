@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.test.espresso.Espresso;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.test.ActivityInstrumentationTestCase2;
 import com.jskierbi.commons.navigation.BackstackAdd;
 import com.jskierbi.commons.navigation.FragmentNavigation;
@@ -539,12 +540,11 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
 		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
 
-		// Drawer opens
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.perform(openDrawer(GravityCompat.START))
-				.check(matches(isDrawerOpen(GravityCompat.START)))
-				.perform(closeDrawer(GravityCompat.START))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+		{ // Drawer enabled
+			DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(fragmentNavigationAnnotation.drawerLayoutId());
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.START));
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.END));
+		}
 
 		// Navigate to fragment
 		getInstrumentation().runOnMainSync(new Runnable() {
@@ -555,21 +555,19 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		});
 		getInstrumentation().waitForIdleSync();
 
-		// Drawer opens
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.perform(openDrawer(GravityCompat.START))
-				.check(matches(isDrawerOpen(GravityCompat.START)))
-				.perform(closeDrawer(GravityCompat.START))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+		{ // Drawer enabled
+			DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(fragmentNavigationAnnotation.drawerLayoutId());
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.START));
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.END));
+		}
 
 		onView(isRoot()).perform(orientationChange());
 		setActivity(getCurrentActivity(getInstrumentation()));
 
-		// Drawer opens
-		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
-				.perform(openDrawer(GravityCompat.START))
-				.check(matches(isDrawerOpen(GravityCompat.START)))
-				.perform(closeDrawer(GravityCompat.START))
-				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+		{ // Drawer enabled
+			DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(fragmentNavigationAnnotation.drawerLayoutId());
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.START));
+			assertEquals("Drawer is unlocked", DrawerLayout.LOCK_MODE_UNLOCKED, drawerLayout.getDrawerLockMode(GravityCompat.END));
+		}
 	}
 }

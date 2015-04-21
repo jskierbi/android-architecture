@@ -8,8 +8,8 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name="com.jskierbi.fragment_nav.ActivityWithToolbarAndDrawer"
-            android:label="Fragment Nav Controllerr">
+            android:name=".ActivityWithToolbarAndDrawer"
+            android:label="FNC Test">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -17,6 +17,8 @@
         </activity>
 
         <activity android:name=".StateSavingActivity" />
+        <activity android:name=".ActivityWithToolbarAndDrawerAlways" />
+        <activity android:name=".ActivityWithToolbarAndDrawerNavRoot" />
 
     </application>
 
