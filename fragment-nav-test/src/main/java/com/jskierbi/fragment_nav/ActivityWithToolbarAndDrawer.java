@@ -13,7 +13,8 @@ import com.jskierbi.commons.navigation.FragmentNavigationController;
 		defaultFragmentClass = StateSavingFragment.class,
 		fragmentContainerId = R.id.fragment_container,
 		drawerLayoutId = R.id.drawer_layout,
-		toolbarId =  R.id.toolbar
+		toolbarId =  R.id.toolbar,
+		doubleBackToExitWithText = R.string.app_name
 )
 public class ActivityWithToolbarAndDrawer extends ActionBarActivity {
 
