@@ -20,7 +20,8 @@ import javax.inject.Inject;
 		fragmentContainerId = R.id.content,
 		toolbarId = R.id.toolbar,
 		defaultFragmentClass = MainFragment.class,
-		drawerLayoutId = R.id.drawer_layout
+		drawerLayoutId = R.id.drawer_layout,
+		drawerOptions = FragmentNavigation.ENABLE_ON_ROOT_TOGGLE_ON_ROOT
 )
 public class ActivityWithDrawerToolbar extends BaseAppActivity {
 
