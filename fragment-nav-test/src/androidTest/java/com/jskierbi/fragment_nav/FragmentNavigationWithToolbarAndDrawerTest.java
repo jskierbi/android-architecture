@@ -325,9 +325,115 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 	}
 
 	public void testBackActionToolbarIntegration() {
-		// Back action performed by clicking open_drawer/close_drawer respectively
-	}
 
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+
+		// Set navigate up content description, so we can retrive proper view in next steps
+		final StateSavingFragment detailFragment = new StateSavingFragment();
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().getFragmentNavigationController().navigateTo(detailFragment);
+				// Set content description on toggle, so we can find it later
+				getActivity().getDrawerToggleDelegate().setActionBarUpIndicator(
+						getActivity().getV7DrawerToggleDelegate().getThemeUpIndicator(),
+						R.string.navigate_back);
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		assertEquals("Backstack has 1 entry", 1, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+
+		// Click back on toolbar
+		onView(withContentDescription(getActivity().getString(R.string.navigate_back)))
+				.perform(click());
+		getInstrumentation().waitForIdleSync();
+		assertEquals("Navigate back performed properly via toolbar home icon", 0, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+
+		// Check if drawer is available after navigating back
+		onView(withContentDescription(getActivity().getString(R.string.open_drawer)))
+				.perform(click());
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().getFragmentNavigationController().navigateTo(new StateSavingFragment(), FragmentNavigationController.Backstack.NO);
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+
+		// Check if drawer is still available (no backstack entry added)
+		onView(withContentDescription(getActivity().getString(R.string.open_drawer)))
+				.perform(click());
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+		// Navigate somewhere
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().getFragmentNavigationController().navigateTo(new StateSavingFragment());
+				getActivity().getFragmentNavigationController().navigateTo(new StateSavingFragment());
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+
+		// Change orientation
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		assertEquals("Navigated to details properly", 2, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+
+		// Check if navigate back via toolbar still works
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				// Set content description on toggle, so we can find it later
+				getActivity().getDrawerToggleDelegate().setActionBarUpIndicator(
+						getActivity().getV7DrawerToggleDelegate().getThemeUpIndicator(),
+						R.string.navigate_back);
+			}
+		});
+		onView(withContentDescription(getActivity().getString(R.string.navigate_back)))
+				.perform(click());
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals("Navigate back performed ok", 1, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+
+		// Change orientation
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		// Check if navigate back via toolbar still works
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				// Set content description on toggle, so we can find it later
+				getActivity().getDrawerToggleDelegate().setActionBarUpIndicator(
+						getActivity().getV7DrawerToggleDelegate().getThemeUpIndicator(),
+						R.string.navigate_back);
+			}
+		});
+		onView(withContentDescription(getActivity().getString(R.string.navigate_back)))
+				.perform(click());
+		getInstrumentation().waitForIdleSync();
+
+		assertEquals("Navigate back performed ok", 0, getActivity().getSupportFragmentManager().getBackStackEntryCount());
+
+		// Change orientation
+		onView(isRoot()).perform(orientationChange());
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		// Check if drawer toggle still opens nav drawer
+		onView(withContentDescription(getActivity().getString(R.string.open_drawer)))
+				.perform(click());
+		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
+				.check(matches(isDrawerOpen(GravityCompat.START)))
+				.perform(closeDrawer(GravityCompat.START))
+				.check(matches(not(isDrawerOpen(GravityCompat.START))));
+
+	}
 	public void testNavDrawerToolbarIntegration() {
 
 		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);

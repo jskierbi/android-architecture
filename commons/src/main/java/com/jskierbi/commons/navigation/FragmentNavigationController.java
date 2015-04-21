@@ -34,8 +34,6 @@ import com.jskierbi.commons.R;
 // TODOJS no toolbar
 // TODOJS activity does not extend ActionBarActivity
 // TODOJS no drawer
-// TODOJS single drawer
-// TODOJS double drawer
 public class FragmentNavigationController {
 
 	private static final String TAG = FragmentNavigationController.class.getSimpleName();
