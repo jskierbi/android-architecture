@@ -1,5 +1,7 @@
 package com.jskierbi.fragment_nav;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.support.test.espresso.Espresso;
 import android.support.v4.view.GravityCompat;
 import android.test.ActivityInstrumentationTestCase2;
@@ -10,6 +12,7 @@ import java.util.UUID;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
@@ -492,5 +495,42 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 				.inRoot(withDecorView(not(getActivity().getWindow().getDecorView())))
 				.check(matches(isDisplayed()));
 
+	}
+
+	public void testDoubleBackToExitMultipleActivities() {
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+		assertTrue("Double back to exit text is defined", 0 != fragmentNavigationAnnotation.doubleBackToExitWithText());
+
+		final Activity oldActivity = getActivity();
+		getInstrumentation().runOnMainSync(new Runnable() {
+			@Override public void run() {
+				getActivity().startActivity(new Intent(getActivity(), ActivityWithToolbarAndDrawer.class));
+			}
+		});
+		getInstrumentation().waitForIdleSync();
+		setActivity(getCurrentActivity(getInstrumentation()));
+
+		final Activity newActivity = getActivity();
+		assertNotSame("New activity is started", oldActivity, newActivity);
+
+		// Back to first activity
+		Espresso.pressBack();
+		getInstrumentation().waitForIdleSync();
+
+		// Check if toast does not appeared
+		onView(withText(fragmentNavigationAnnotation.doubleBackToExitWithText()))
+				.check(doesNotExist());
+
+		setActivity(getCurrentActivity(getInstrumentation()));
+		assertNotSame("We've navigated back through activities", newActivity, getActivity());
+
+		Espresso.pressBack();
+		getInstrumentation().waitForIdleSync();
+
+		// Check if toast appeared
+		onView(withText(fragmentNavigationAnnotation.doubleBackToExitWithText()))
+				.inRoot(withDecorView(not(getActivity().getWindow().getDecorView())))
+				.check(matches(isDisplayed()));
 	}
 }
