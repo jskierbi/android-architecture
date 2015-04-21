@@ -29,7 +29,7 @@ public @interface FragmentNavigation {
 	Class defaultFragmentClass();
 
 	/**
-	 * Toolbar id to integrate with
+	 * Toolbar id to integrate with, or 0 if toolbar not available
 	 */
 	@IdRes int toolbarId() default 0;
 
@@ -40,7 +40,7 @@ public @interface FragmentNavigation {
 
 	/**
 	 * If using DrawerLayout for navigation drawer pattern, pass its id here
-	 * to enable FragmentNavigationController integrate it with DrawerToggle
+	 * to enable FragmentNavigationController integrate it with ActionBarDrawerToggle
 	 */
 	@IdRes int drawerLayoutId() default 0;
 

@@ -46,12 +46,17 @@ public class FragmentNavigationController {
 	protected final ActionBarActivity mActionBarActivity;
 	protected final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
 
-	protected final @IdRes int mContainerId;
-	protected final Class mDefaultFragment;
-	protected final @StringRes int mDoubleBackToExitWithText;
-	protected final @IdRes int mToolbarId;
-	protected final @IdRes int mDrawerLayoutId;
-	protected final @FragmentNavigation.NavOption int mDrawerBehaviourOptions;
+	/** @FragmentNavigation annotation parameters form Activity class */
+	protected final NavigatonParameters mParams;
+	private static class NavigatonParameters {
+
+		protected @IdRes int fragmentContainerId;
+		protected Class defaultFragmentClass;
+		protected @StringRes int doubleBackToExitWithText;
+		protected @IdRes int toolbarId;
+		protected @IdRes int drawerLayoutId;
+		protected @FragmentNavigation.NavOption int drawerOptions;
+	}
 
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected State mState = new State();
@@ -68,19 +73,9 @@ public class FragmentNavigationController {
 	 * to manage toolbar state (uses Fragments' lifecycle callbacks to save and restore state)
 	 */
 	public FragmentNavigationController(FragmentActivity activity) {
+		mParams = readActivityAnnotations(activity);
 
-		FragmentNavigation fragmentNavigation = activity.getClass().getAnnotation(FragmentNavigation.class);
-		if (fragmentNavigation == null) {
-			throw new IllegalArgumentException("Activity hosting NavService has to be annotated with @NavigationHost");
-		}
-
-		mContainerId = fragmentNavigation.fragmentContainerId();
-		mToolbarId = fragmentNavigation.toolbarId();
-		mDoubleBackToExitWithText = fragmentNavigation.doubleBackToExitWithText();
-		mDrawerLayoutId = fragmentNavigation.drawerLayoutId();
-		mDefaultFragment = fragmentNavigation.defaultFragmentClass();
-		mDrawerBehaviourOptions = fragmentNavigation.drawerOptions();
-
+		// TODO use delegate here
 		mActivity = activity;
 		mActionBarActivity = mActivity instanceof ActionBarActivity ?
 				(ActionBarActivity) activity :
@@ -122,7 +117,7 @@ public class FragmentNavigationController {
 	public void navigateTo(android.support.v4.app.Fragment nextFragment, BackstackAdd addToBackstack) {
 
 		try {
-			Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
+			Fragment currentFragment = mFragmentManager.findFragmentById(mParams.fragmentContainerId);
 			AnimatedSupportFragment nextFragmentAnimated = nextFragment instanceof AnimatedSupportFragment ?
 					(AnimatedSupportFragment) nextFragment : null;
 			if (currentFragment instanceof AnimatedSupportFragment) {
@@ -152,7 +147,7 @@ public class FragmentNavigationController {
 						nextFragmentAnimated.getPopEnterAnim(),
 						nextFragmentAnimated.getPopExitAnim());
 			}
-			transaction.replace(mContainerId, nextFragment);
+			transaction.replace(mParams.fragmentContainerId, nextFragment);
 			if (addToBackstack == BackstackAdd.YES) {
 				transaction.addToBackStack(null);
 			}
@@ -171,7 +166,7 @@ public class FragmentNavigationController {
 			// Navigate back in fragment hierarchy
 			try {
 				Fragment currentFragment;
-				if ((currentFragment = mFragmentManager.findFragmentById(mContainerId)) != null) {
+				if ((currentFragment = mFragmentManager.findFragmentById(mParams.fragmentContainerId)) != null) {
 					// Current fragment can be added/replaced without adding to backstack. If this is the case,
 					// after popping backstack current fragment will still be visible - so we need to remove it manually
 					// before popping!
@@ -185,11 +180,11 @@ public class FragmentNavigationController {
 			}
 		} else {
 			// Finish activity, handle double back to exit
-			if (mDoubleBackToExitWithText != 0 && mActivity.isTaskRoot()) {
+			if (mParams.doubleBackToExitWithText != 0 && mActivity.isTaskRoot()) {
 				if (mDoubleBackToExitHandler.isExitOnBack()) {
 					mActivity.finish();
 				} else {
-					Toast.makeText(mActivity, mDoubleBackToExitWithText, Toast.LENGTH_SHORT).show();
+					Toast.makeText(mActivity, mParams.doubleBackToExitWithText, Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				mActivity.finish();
@@ -203,7 +198,7 @@ public class FragmentNavigationController {
 		final int backstackEntryCount = mFragmentManager.getBackStackEntryCount();
 		for (int i = mFragmentManager.getBackStackEntryCount(); i > 0; --i) {
 			// Current fragment could has been added outside transaction - remove it!
-			final Fragment currentFragment = mFragmentManager.findFragmentById(mContainerId);
+			final Fragment currentFragment = mFragmentManager.findFragmentById(mParams.fragmentContainerId);
 			if (backstackEntryCount > 0 && currentFragment != null) {
 				mFragmentManager.beginTransaction()
 						.remove(currentFragment)
@@ -225,19 +220,30 @@ public class FragmentNavigationController {
 	/////////////////////////////////////////////////
 	void onActivityCreated(Bundle savedInstanceState) {
 
-		// TODOJS perform runtime checks of annotated fields
-		// 1. FragmentContainer should extend FrameLayout
-		// 2. If toolbar ID set, it have to exist in view hierarchy
-		// 3. If double back to exti set, there should be also text set
-		// 4. If primary drawer layout id is set, it have to exist in view hierarchy.
-		// 5. If secondary drawer layout id is set, it have to exist in view hierarchy.
+		// Validate Acitivty annotation parameters
+		if (null == mActivity.findViewById(mParams.fragmentContainerId)) {
+			throw new IllegalStateException("Fragment container view not found by id. " +
+					"Check Activity @FragmentNavigation annotation parameter fragmentContainerId.");
+		}
+		if (0 != mParams.toolbarId && null == mActivity.findViewById(mParams.toolbarId)) {
+			throw new IllegalStateException("toolbarId defined but not found in view hierarchy." +
+					"Check Activity @FragmentNavigation annotation parameter toolbarId");
+		}
+		if (0 != mParams.drawerLayoutId && null == mActivity.findViewById(mParams.drawerLayoutId)) {
+			throw new IllegalStateException("drawerLayoutId defined but not found in view hierarchy." +
+					"Check Activity @FragmentNavigation annotation parameter drawerLayoutId");
+		}
+		// If string is not found, throws an exception
+		if (0 != mParams.doubleBackToExitWithText) {
+			mActivity.getString(mParams.doubleBackToExitWithText);
+		}
 
-		{   // Initialize drawer toggle, if DrawerLayout available
+		// Initialize drawer toggle, if DrawerLayout available
+		{
 			View activityRootView = mActivity.findViewById(android.R.id.content);
-//			final DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
-			final DrawerLayout drawerLayout = (DrawerLayout) mActionBarActivity.findViewById(mDrawerLayoutId);
+			final DrawerLayout drawerLayout = (DrawerLayout) mActionBarActivity.findViewById(mParams.drawerLayoutId);
 			if (drawerLayout != null) {
-				final Toolbar toolbar = (Toolbar) mActivity.findViewById(mToolbarId);
+				final Toolbar toolbar = (Toolbar) mActivity.findViewById(mParams.toolbarId);
 				// Handle toolbar home clicks here
 				final View.OnClickListener toolbarNavListener = new View.OnClickListener() {
 					@Override public void onClick(View v) {
@@ -302,12 +308,12 @@ public class FragmentNavigationController {
 		}
 
 		// Add default fragment
-		if (mFragmentManager.findFragmentById(mContainerId) == null) {
+		if (mFragmentManager.findFragmentById(mParams.fragmentContainerId) == null) {
 			try {
 				Log.d(TAG, "## Add default fragment!!!");
-				Fragment fragment = (Fragment) mDefaultFragment.newInstance();
+				Fragment fragment = (Fragment) mParams.defaultFragmentClass.newInstance();
 				mFragmentManager.beginTransaction()
-						.add(mContainerId, fragment)
+						.add(mParams.fragmentContainerId, fragment)
 						.commit();
 			} catch (InstantiationException e) {
 				Log.e(TAG, "Cannot instantinate default fragment", e);
@@ -326,11 +332,13 @@ public class FragmentNavigationController {
 			outState.putBoolean(STATE_KEY_FLG_NAV_UP_ENABLED, mState.mFlgNavUpEnabled);
 		}
 	}
+
 	void onConfigurationChanged(Configuration newConfig) {
 		if (mDrawerToggle != null) {
 			mDrawerToggle.onConfigurationChanged(newConfig);
 		}
 	}
+
 	boolean onOptionsItemSelected(MenuItem menuItem) {
 		switch (menuItem.getItemId()) {
 		case android.R.id.home:
@@ -342,6 +350,29 @@ public class FragmentNavigationController {
 		}
 	}
 
+	protected NavigatonParameters readActivityAnnotations(Activity activity) {
+		FragmentNavigation fragmentNavigation = activity.getClass().getAnnotation(FragmentNavigation.class);
+		if (fragmentNavigation == null) {
+			throw new IllegalArgumentException("Activity hosting NavService has to be annotated with @NavigationHost");
+		}
+
+		NavigatonParameters annotated = new NavigatonParameters();
+		annotated.fragmentContainerId = fragmentNavigation.fragmentContainerId();
+		annotated.defaultFragmentClass = fragmentNavigation.defaultFragmentClass();
+		annotated.toolbarId = fragmentNavigation.toolbarId();
+		annotated.doubleBackToExitWithText = fragmentNavigation.doubleBackToExitWithText();
+		annotated.drawerLayoutId = fragmentNavigation.drawerLayoutId();
+		annotated.drawerOptions = fragmentNavigation.drawerOptions();
+
+		// Runtime checks
+		if (annotated.drawerLayoutId == 0 && annotated.drawerOptions != FragmentNavigation.ENABLE_ALWAYS_TOGGLE_ON_ROOT) {
+			throw new IllegalArgumentException("drawerOptions set but no drawerLayoutId defined! drawerOptions has " +
+					"any meaning only in conjunction with drawer layout");
+		}
+
+		return annotated;
+	}
+
 	protected void updateDrawerAndToggle(boolean flgNavBackEnabled) {
 		final ActionBar actionBar = mActionBarActivity.getSupportActionBar();
 		mState.mFlgNavUpEnabled = flgNavBackEnabled;
@@ -350,7 +381,7 @@ public class FragmentNavigationController {
 			actionBar.setDisplayHomeAsUpEnabled(flgNavBackEnabled);
 			actionBar.setHomeButtonEnabled(flgNavBackEnabled);
 		} else {
-			switch (mDrawerBehaviourOptions) {
+			switch (mParams.drawerOptions) {
 			case FragmentNavigation.ENABLE_ALWAYS_TOGGLE_ON_ROOT:
 				mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
 				mDrawerToggle.syncState();
@@ -361,7 +392,7 @@ public class FragmentNavigationController {
 				break;
 			case FragmentNavigation.ENABLE_ON_ROOT_TOGGLE_ON_ROOT:
 				mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
-				((DrawerLayout) mActivity.findViewById(mDrawerLayoutId)).setDrawerLockMode(flgNavBackEnabled ?
+				((DrawerLayout) mActivity.findViewById(mParams.drawerLayoutId)).setDrawerLockMode(flgNavBackEnabled ?
 						DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
 						DrawerLayout.LOCK_MODE_UNLOCKED);
 				mDrawerToggle.syncState();
