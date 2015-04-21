@@ -51,6 +51,7 @@ public class FragmentNavigationController {
 	protected final @StringRes int mDoubleBackToExitWithText;
 	protected final @IdRes int mToolbarId;
 	protected final @IdRes int mDrawerLayoutId;
+	protected final @FragmentNavigation.NavOption int mDrawerBehaviourOptions;
 
 	protected ActionBarDrawerToggle mDrawerToggle;
 	protected State mState = new State();
@@ -78,6 +79,7 @@ public class FragmentNavigationController {
 		mDoubleBackToExitWithText = fragmentNavigation.doubleBackToExitWithText();
 		mDrawerLayoutId = fragmentNavigation.drawerLayoutId();
 		mDefaultFragment = fragmentNavigation.defaultFragmentClass();
+		mDrawerBehaviourOptions = fragmentNavigation.drawerOptions();
 
 		mActivity = activity;
 		mActionBarActivity = mActivity instanceof ActionBarActivity ?
@@ -157,7 +159,7 @@ public class FragmentNavigationController {
 			transaction.commit();
 
 			final boolean isNavUpEnabled = addToBackstack == BackstackAdd.YES || mFragmentManager.getBackStackEntryCount() > 0;
-			updateHomeAsUpState(isNavUpEnabled);
+			updateDrawerAndToggle(isNavUpEnabled);
 
 		} catch (Exception ex) {
 			Log.e(TAG, "Exception while adding fragment to backstack!!!", ex);
@@ -195,7 +197,7 @@ public class FragmentNavigationController {
 		}
 
 		final boolean isNavUpEnabled = backstackEntryCount > 1;
-		updateHomeAsUpState(isNavUpEnabled);
+		updateDrawerAndToggle(isNavUpEnabled);
 	}
 	public void clearBackstack() {
 		final int backstackEntryCount = mFragmentManager.getBackStackEntryCount();
@@ -210,7 +212,7 @@ public class FragmentNavigationController {
 			// Execute transaction immediate, so in next loop we can get current fragment and remove it!
 			mFragmentManager.popBackStackImmediate();
 		}
-		updateHomeAsUpState(false); // Nav back is not available
+		updateDrawerAndToggle(false); // Nav back is not available
 	}
 	/////////////////////////////////////////////////
 	// Integration via Activity
@@ -288,10 +290,10 @@ public class FragmentNavigationController {
 			if (mState.mActionbarDisplayOptions != 0 && mActionBarActivity.getSupportActionBar() != null) {
 				mActionBarActivity.getSupportActionBar().setDisplayOptions(mState.mActionbarDisplayOptions);
 			}
-			updateHomeAsUpState(mState.mFlgNavUpEnabled);
+			updateDrawerAndToggle(mState.mFlgNavUpEnabled);
 		} else {
 			// If not restoring state, initialize!
-			updateHomeAsUpState(false); // we're initializing - no nav up cause backstack is empty
+			updateDrawerAndToggle(false); // we're initializing - no nav up cause backstack is empty
 			if (mDrawerToggle != null) {
 				mActionBarActivity.getSupportActionBar().setHomeButtonEnabled(true);
 				mActionBarActivity.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -315,7 +317,7 @@ public class FragmentNavigationController {
 		}
 	}
 	void onResume() {
-		updateHomeAsUpState(mState.mFlgNavUpEnabled);
+		updateDrawerAndToggle(mState.mFlgNavUpEnabled);
 	}
 	void onSaveInstanceState(Bundle outState) {
 		if (mActionBarActivity.getSupportActionBar() != null) {
@@ -340,7 +342,7 @@ public class FragmentNavigationController {
 		}
 	}
 
-	protected void updateHomeAsUpState(boolean flgNavBackEnabled) {
+	protected void updateDrawerAndToggle(boolean flgNavBackEnabled) {
 		final ActionBar actionBar = mActionBarActivity.getSupportActionBar();
 		mState.mFlgNavUpEnabled = flgNavBackEnabled;
 
@@ -348,8 +350,23 @@ public class FragmentNavigationController {
 			actionBar.setDisplayHomeAsUpEnabled(flgNavBackEnabled);
 			actionBar.setHomeButtonEnabled(flgNavBackEnabled);
 		} else {
-			mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
-			mDrawerToggle.syncState();
+			switch (mDrawerBehaviourOptions) {
+			case FragmentNavigation.ENABLE_ALWAYS_TOGGLE_ON_ROOT:
+				mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
+				mDrawerToggle.syncState();
+				break;
+			case FragmentNavigation.ENABLE_ALWYAS_TOGGLE_ALWAYS:
+				mDrawerToggle.setDrawerIndicatorEnabled(true);
+				mDrawerToggle.syncState();
+				break;
+			case FragmentNavigation.ENABLE_ON_ROOT_TOGGLE_ON_ROOT:
+				mDrawerToggle.setDrawerIndicatorEnabled(!mState.mFlgNavUpEnabled);
+				((DrawerLayout) mActivity.findViewById(mDrawerLayoutId)).setDrawerLockMode(flgNavBackEnabled ?
+						DrawerLayout.LOCK_MODE_LOCKED_CLOSED :
+						DrawerLayout.LOCK_MODE_UNLOCKED);
+				mDrawerToggle.syncState();
+				break;
+			}
 		}
 	}
 }
