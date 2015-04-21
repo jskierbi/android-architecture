@@ -1,5 +1,6 @@
 package com.jskierbi.fragment_nav;
 
+import android.support.test.espresso.Espresso;
 import android.support.v4.view.GravityCompat;
 import android.test.ActivityInstrumentationTestCase2;
 import com.jskierbi.commons.navigation.FragmentNavigation;
@@ -10,6 +11,7 @@ import java.util.UUID;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.*;
 import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.getCurrentActivity;
 import static com.jskierbi.commons_espresso.ActivityConfigChangeUtils.orientationChange;
@@ -475,5 +477,20 @@ public class FragmentNavigationWithToolbarAndDrawerTest
 		onView(withId(fragmentNavigationAnnotation.drawerLayoutId()))
 				.check(matches(not(isDrawerOpen(GravityCompat.END))))
 				.check(matches(not(isDrawerVisible(GravityCompat.END))));
+	}
+
+	public void testDoubleBackToExit() {
+		final FragmentNavigation fragmentNavigationAnnotation = getActivity().getClass().getAnnotation(FragmentNavigation.class);
+		assertNotNull("Activity is annotated with @FragmentNavigation", fragmentNavigationAnnotation);
+		assertTrue("Double back to exit text is defined", 0 != fragmentNavigationAnnotation.doubleBackToExitWithText());
+
+		Espresso.pressBack();
+		getInstrumentation().waitForIdleSync();
+
+		// Check if toast appeared
+		onView(withText(fragmentNavigationAnnotation.doubleBackToExitWithText()))
+				.inRoot(withDecorView(not(getActivity().getWindow().getDecorView())))
+				.check(matches(isDisplayed()));
+
 	}
 }

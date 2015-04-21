@@ -19,8 +19,7 @@ public @interface FragmentNavigation {
 	Class defaultFragmentClass();
 
 	@IdRes int toolbarId() default 0;
-	boolean doubleBackToExitEnabled() default false;
-	@StringRes int doubleBackToExitText() default 0;
+	@StringRes int doubleBackToExitWithText() default 0;
 
 	@IdRes int drawerLayoutId() default 0;
 }

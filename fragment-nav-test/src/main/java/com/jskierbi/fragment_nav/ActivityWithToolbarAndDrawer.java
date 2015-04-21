@@ -14,7 +14,7 @@ import com.jskierbi.commons.navigation.FragmentNavigationController;
 		fragmentContainerId = R.id.fragment_container,
 		drawerLayoutId = R.id.drawer_layout,
 		toolbarId =  R.id.toolbar,
-		doubleBackToExitEnabled = true
+		doubleBackToExitWithText = R.string.navigate_back
 )
 public class ActivityWithToolbarAndDrawer extends ActionBarActivity {
 
@@ -29,5 +29,9 @@ public class ActivityWithToolbarAndDrawer extends ActionBarActivity {
 
 	public FragmentNavigationController getFragmentNavigationController() {
 		return mFragmentNavigationController;
+	}
+
+	@Override public void onBackPressed() {
+		mFragmentNavigationController.onBackPressed();
 	}
 }

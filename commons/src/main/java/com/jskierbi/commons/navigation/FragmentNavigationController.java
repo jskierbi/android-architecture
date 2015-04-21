@@ -45,14 +45,13 @@ public class FragmentNavigationController {
 	private final FragmentActivity mActivity;
 	private final ActionBarActivity mActionBarActivity;
 	private final DoubleBackToExitHandler mDoubleBackToExitHandler = new DoubleBackToExitHandler();
+
 	private final @IdRes int mContainerId;
 	private final Class mDefaultFragment;
-
-	private final boolean mFlgDoubleBackToExit;
-	private final @StringRes int mDoubleBackToExitText;
-
+	private final @StringRes int mDoubleBackToExitWithText;
 	private final @IdRes int mToolbarId;
 	private final @IdRes int mDrawerLayoutId;
+
 	private ActionBarDrawerToggle mDrawerToggle;
 	private State mState = new State();
 	/**
@@ -69,8 +68,7 @@ public class FragmentNavigationController {
 
 		mContainerId = fragmentNavigation.fragmentContainerId();
 		mToolbarId = fragmentNavigation.toolbarId();
-		mFlgDoubleBackToExit = fragmentNavigation.doubleBackToExitEnabled();
-		mDoubleBackToExitText = fragmentNavigation.doubleBackToExitText();
+		mDoubleBackToExitWithText = fragmentNavigation.doubleBackToExitWithText();
 		mDrawerLayoutId = fragmentNavigation.drawerLayoutId();
 		mDefaultFragment = fragmentNavigation.defaultFragmentClass();
 
@@ -178,11 +176,11 @@ public class FragmentNavigationController {
 			}
 		} else {
 			// Finish activity, handle double back to exit
-			if (mFlgDoubleBackToExit && mActivity.isTaskRoot()) {
+			if (mDoubleBackToExitWithText != 0 && mActivity.isTaskRoot()) {
 				if (mDoubleBackToExitHandler.isExitOnBack()) {
 					mActivity.finish();
 				} else {
-					Toast.makeText(mActivity, mDoubleBackToExitText, Toast.LENGTH_SHORT).show();
+					Toast.makeText(mActivity, mDoubleBackToExitWithText, Toast.LENGTH_SHORT).show();
 				}
 			} else {
 				mActivity.finish();
