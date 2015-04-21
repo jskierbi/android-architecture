@@ -2,4 +2,5 @@
     <string name="app_name">commons</string>
     <string name="open_drawer">Open navigation</string>
     <string name="close_drawer">Close navigation</string>
+    <string name="navigate_back">Navigate back</string>
 </resources>

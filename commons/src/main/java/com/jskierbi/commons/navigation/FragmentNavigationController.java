@@ -229,7 +229,8 @@ public class FragmentNavigationController {
 
 		{   // Initialize drawer toggle, if DrawerLayout available
 			View activityRootView = mActivity.findViewById(android.R.id.content);
-			final DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
+//			final DrawerLayout drawerLayout = ViewHierarchyHelper.findChildViewOfType(DrawerLayout.class, activityRootView);
+			final DrawerLayout drawerLayout = (DrawerLayout) mActionBarActivity.findViewById(mDrawerLayoutId);
 			if (drawerLayout != null) {
 				final Toolbar toolbar = (Toolbar) mActivity.findViewById(mToolbarId);
 				// Handle toolbar home clicks here
